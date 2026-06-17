@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色散关系推导 — Hoshino & Terasawa 1985</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+:root {
+  --bg:       #f9f8f5;
+  --bg2:      #f0ede6;
+  --bg3:      #e8e4db;
+  --text:     #1a1814;
+  --text2:    #5c5852;
+  --accent:   #1d3f8a;
+  --accent2:  #e8edfa;
+  --red:      #b83030;
+  --border:   #d8d4ca;
+  --mono:     'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --sans:     'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:     #181714;
+    --bg2:    #222018;
+    --bg3:    #2a2820;
+    --text:   #e4e0d8;
+    --text2:  #8a8680;
+    --accent: #7b9cf0;
+    --accent2:#1a2240;
+    --red:    #e06060;
+    --border: #38352c;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ── Layout ── */
+.page { display: grid; grid-template-columns: 210px 1fr; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 2.5rem 1rem 2rem 1.5rem;
+  border-right: 0.5px solid var(--border);
+  background: var(--bg);
+}
+.sidebar-logo {
+  font-size: 11px; font-weight: 500; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--text2); margin-bottom: 1.5rem;
+}
+.nav-section { margin-bottom: 1.25rem; }
+.nav-heading {
+  font-size: 10px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text2); margin-bottom: .4rem;
+  padding-left: .5rem;
+}
+.nav-list { list-style: none; }
+.nav-list li + li { margin-top: 1px; }
+.nav-list a {
+  display: block; font-size: 13px; color: var(--text2);
+  text-decoration: none; padding: .28rem .5rem;
+  border-radius: 4px; transition: background .12s, color .12s;
+}
+.nav-list a:hover  { color: var(--accent); background: var(--accent2); }
+.nav-list a.active { color: var(--accent); background: var(--accent2); font-weight: 500; }
+
+/* ── Main ── */
+.main { padding: 3rem 3.5rem 5rem; max-width: 1000px; margin: 0 auto; }
+
+/* ── Header ── */
+.page-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 0.5px solid var(--border); }
+.page-header h1 { font-size: 24px; font-weight: 500; line-height: 1.35; margin-bottom: .6rem; }
+.ref { font-size: 13px; color: var(--text2); font-style: italic; line-height: 1.6; }
+
+/* ── Sections ── */
+section { margin-bottom: 3rem; scroll-margin-top: 1.5rem; }
+h2 { font-size: 17px; font-weight: 500; margin-bottom: 1.25rem; padding-bottom: .5rem; border-bottom: 0.5px solid var(--border); }
+h3 { font-size: 14px; font-weight: 500; margin: 1.5rem 0 .6rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+p  { margin-bottom: .9rem; }
+
+/* ── Math blocks ── */
+.eq {
+  overflow-x: auto; padding: .9rem 1.1rem; margin: .8rem 0;
+  background: var(--bg2); border-radius: 6px;
+  border: 0.5px solid var(--border);
+  font-size: 14px;
+}
+.eq.key { border-left: 3px solid var(--accent); }
+.eq.result { border-left: 3px solid var(--red); background: var(--bg3); }
+
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin: .8rem 0; }
+th { padding: .55rem .8rem; font-weight: 500; background: var(--bg2); border: 0.5px solid var(--border); text-align: left; }
+td { padding: .55rem .8rem; border: 0.5px solid var(--border); }
+
+/* ── Callout ── */
+.callout {
+  background: var(--accent2); border-left: 3px solid var(--accent);
+  padding: .75rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0;
+  font-size: 14px;
+}
+.callout.warn { border-left-color: var(--red); background: color-mix(in srgb, var(--red) 8%, var(--bg)); }
+
+/* ── Interactive ── */
+.interactive {
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 8px; padding: 1.25rem 1.5rem; margin-top: 1rem;
+}
+.interactive-label {
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  letter-spacing: .07em; text-transform: uppercase; margin-bottom: 1rem;
+}
+.param-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: .75rem 1rem; margin-bottom: 1rem;
+}
+.param-item label { display: block; font-size: 12px; color: var(--text2); margin-bottom: .3rem; }
+.param-item input {
+  width: 100%; padding: .35rem .6rem; font-size: 13px;
+  font-family: var(--mono); border: 0.5px solid var(--border);
+  border-radius: 4px; background: var(--bg); color: var(--text);
+  outline: none;
+}
+.param-item input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent2); }
+
+.result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.result-card {
+  background: var(--bg); border: 0.5px solid var(--border);
+  border-radius: 6px; padding: .65rem .9rem;
+}
+.result-card .rlabel { font-size: 11px; color: var(--text2); margin-bottom: .2rem; }
+.result-card .rvalue { font-family: var(--mono); font-size: 13px; font-weight: 500; word-break: break-all; }
+.result-card .rtag { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.resonant { color: var(--red) !important; }
+
+/* ── Canvas ── */
+.canvas-wrap { position: relative; margin: 1rem 0; }
+canvas#zcanvas { display: block; width: 100%; height: 220px; border-radius: 5px; cursor: crosshair; }
+.canvas-legend { display: flex; gap: 1.25rem; font-size: 12px; color: var(--text2); margin-top: .5rem; }
+.canvas-legend span { display: flex; align-items: center; gap: 5px; }
+.legend-line { display: inline-block; width: 22px; height: 2.5px; border-radius: 2px; }
+.canvas-tooltip {
+  position: absolute; top: 6px; right: 8px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 4px; padding: 4px 8px; pointer-events: none;
+  display: none;
+}
+
+.slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.slider-row label { font-size: 12px; color: var(--text2); min-width: 60px; }
+.slider-row input[type=range] { flex: 1; }
+.slider-row output { font-family: var(--mono); font-size: 12px; min-width: 36px; text-align: right; }
+
+/* ── JS Lesson callout ── */
+.js-note {
+  border: 0.5px solid var(--border); border-radius: 6px;
+  padding: .65rem 1rem; margin: 1rem 0; font-size: 13px;
+}
+.js-note-head { font-weight: 500; color: var(--accent); font-size: 12px; margin-bottom: .25rem; }
+code { font-family: var(--mono); font-size: 12px; background: var(--bg3); padding: .1em .4em; border-radius: 3px; }
+
+@media (max-width: 680px) {
+  .page { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 1.5rem; }
+  .result-grid { grid-template-columns: 1fr; }
+}
+/* ── 补充笔记 ── */
+.note-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .6rem;
+  padding: .28rem .7rem;
+  font-size: 12px;
+  font-family: var(--sans);
+  color: var(--text2);
+  background: transparent;
+  border: 0.5px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.note-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent2);
+}
+.note-toggle-icon {
+  font-size: 14px;
+  line-height: 1;
+  transition: transform .2s;
+}
+.note-toggle[aria-expanded="true"] .note-toggle-icon {
+  transform: rotate(45deg);
+}
+.note-panel {
+  margin-top: .6rem;
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--text2);
+  border-radius: 0 6px 6px 0;
+  background: var(--bg2);
+  font-size: 13px;
+  color: var(--text2);
+  animation: note-in .15s ease;
+}
+@keyframes note-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.note-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem .9rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.note-panel-title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.note-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text2);
+  padding: 0 .2rem;
+  line-height: 1;
+  transition: color .12s;
+}
+.note-close:hover { color: var(--text); }
+.note-panel-body {
+  padding: .8rem .9rem;
+  line-height: 1.75;
+}
+.note-panel-body p { margin-bottom: .7rem; }
+.note-panel-body p:last-child { margin-bottom: 0; }
+.note-panel-body strong { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<!-- ══ Sidebar ══ -->
+<nav class="sidebar" aria-label="页面导航">
+  <p class="sidebar-logo">Plasma Physics</p>
+  <div class="nav-section">
+    <p class="nav-heading">推导步骤</p>
+    <ul class="nav-list">
+      <li><a href="#model">0. 模型设置</a></li>
+      <li><a href="#fourier">0. 傅立叶变换基础</a></li>
+      <li><a href="#step1">Step 1 — 线性化</a></li>
+      <li><a href="#step2">Step 2 — 求解 f_j1</a></li>
+      <li><a href="#step3">Step 3 — 电流与波方程</a></li>
+      <li><a href="#step4">Step 4 — Z 函数</a></li>
+      <li><a href="#result">最终结果</a></li>
+      <li><a href="#physics">物理解释</a></li>
+    </ul>
+  </div>
+  <div class="nav-section">
+    <p class="nav-heading">交互工具</p>
+    <ul class="nav-list">
+      <li><a href="#calc">参数计算器</a></li>
+      <li><a href="#zplot">Z 函数图像</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══ Main ══ -->
+<main class="main">
+
+<header class="page-header">
+  <h1>色散关系 \(D(\omega, k)\) 的推导</h1>
+  <p class="ref">
+    基于 Hoshino &amp; Terasawa (1985), <em>J. Geophys. Res.</em>, <strong>90</strong>, A1, 57–64<br>
+    研究场向离子束激发上游磁流体波的机制（R 模，平行传播）
+  </p>
+</header>
+
+<!-- ══ Step 0 ══ -->
+<section id="model">
+  <h2>0. 模型设置</h2>
+
+  <h3>等离子体成分</h3>
+  <table>
+    <thead><tr><th>成分</th><th>数密度</th><th>漂移速度</th><th>热速度</th></tr></thead>
+    <tbody>
+      <tr><td>束流离子 \(b\)</td><td>\(n_b\)</td><td>\(V_b\)（沿 \(\mathbf{B}_0\)）</td><td>\(V_{th,b}=\sqrt{2T_b/m_i}\)</td></tr>
+      <tr><td>背景离子 \(m\)</td><td>\(n_0-n_b\)</td><td>\(V_m=0\)</td><td>\(V_{th,m}=\sqrt{2T_m/m_i}\)</td></tr>
+      <tr><td>电子 \(e\)</td><td>\(n_0\)</td><td>\(V_{ed}=V_b n_b/n_0\)</td><td>\(V_{th,e}=\sqrt{2T_e/m_e}\)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>平衡分布函数（漂移 Maxwell 分布）</h3>
+  <div class="eq">
+    \[f_{j0}(V_\parallel,V_\perp)=C_j n_j\exp\!\left[-\frac{m_j(V_\parallel-V_{dj})^2+V_\perp^2}{2T_j}\right]\]
+  </div>
+
+  <h3>波的几何关系</h3>
+  <div class="eq">
+    \[\mathbf{B}_0=B_0\hat{x},\qquad\mathbf{k}=k\hat{x}\quad\text{（平行传播）}\]
+  </div>
+  <p>考虑 <strong>R 模</strong>（右手圆偏振波），扰动电场为：</p>
+  <div class="eq">
+    \[\tilde{\mathbf{E}}_1=E_R(\hat{y}+i\hat{z})e^{ikx-i\omega t}\]
+  </div>
+</section>
+
+<!-- ══ Fourier ══ -->
+<section id="fourier">
+  <h2>0. 傅立叶变换基础</h2>
+  <p>傅立叶变换是理解色散关系推导的核心数学工具。以下视频对其有非常直观的讲解，遇到不理解的地方可以随时回来重看。</p>
+  <a href="https://www.bilibili.com/opus/807102944232079367"
+     target="_blank"
+     rel="noopener noreferrer"
+     style="
+       display: inline-flex;
+       align-items: center;
+       gap: .5rem;
+       margin-top: .4rem;
+       padding: .45rem 1rem;
+       font-size: 13px;
+       color: var(--accent);
+       background: var(--accent2);
+       border: 0.5px solid var(--accent);
+       border-radius: 6px;
+       text-decoration: none;
+       transition: opacity .15s;
+     "
+     onmouseover="this.style.opacity='.75'"
+     onmouseout="this.style.opacity='1'"
+  >
+    ▶ 傅立叶变换直观讲解 — Bilibili
+  </a>
+  <div style="margin-top:1.5rem;padding:1rem 1.25rem;background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;">
+
+  <h3 style="font-size:13px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin:0 0 .8rem;">视频核心思路</h3>
+  <p>傅里叶变换的直觉：把时域信号 \(g(t)\) 以频率 \(f\) "缠绕"到复平面（即乘以 \(e^{-2\pi i f t}\)），当缠绕频率与信号成分吻合时，缠绕图的<strong>质心</strong>会偏离原点——质心的位置就是傅里叶变换值：</p>
+  <div class="eq" style="margin:.5rem 0;">
+    \[\hat{g}(f)=\int_{-\infty}^{+\infty}g(t)\,e^{-2\pi i f t}\,dt\]
+  </div>
+  <p>频谱 \(|\hat{g}(f)|\) 告诉你信号中各频率成分的强度。拖动下方滑块可以直观感受这一过程。</p>
+
+  <!-- ── 傅立叶直观展示的交互组件 ── -->
+  <div style="margin-top:1rem;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:180px;">
+        <label for="fw2" style="font-size:12px;color:var(--text2);white-space:nowrap;">缠绕频率 f</label>
+        <input type="range" id="fw2" min="0" max="5" step="0.02" value="2" style="flex:1;">
+        <code id="fw2-out" style="font-size:12px;min-width:68px;">f = 2.00 Hz</code>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label for="sig2" style="font-size:12px;color:var(--text2);">信号</label>
+        <select id="sig2" style="font-size:12px;padding:3px 6px;border:0.5px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);">
+          <option value="2,3">2 Hz + 3 Hz</option>
+          <option value="2">仅 2 Hz</option>
+          <option value="3">仅 3 Hz</option>
+          <option value="1,3,5">1 + 3 + 5 Hz</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">时域信号 g(t)</div>
+        <canvas id="ft2-t" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">复平面缠绕（红点=质心）</div>
+        <canvas id="ft2-w" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">频谱 |ĝ(f)| · 蓝线 = 当前缠绕频率</div>
+      <canvas id="ft2-s" style="width:100%;border-radius:4px;display:block;"></canvas>
+    </div>
+  </div>
+
+  <h3 style="font-size:13px;font-weight:500;color:#e8832a;text-transform:uppercase;letter-spacing:.07em;margin:1.5rem 0 .6rem;">与等离子体物理的联系</h3>
+  <p>Vlasov 方程线性化时，假设扰动 \(f_{j1}\propto e^{ikx-i\omega t}\)，等价于同时对空间和时间做傅里叶变换，使偏导算符替换为代数量：\(\partial_t\to -i\omega\)，\(\partial_x\to ik\)。色散关系 \(D(\omega,k)=0\) 给出"被等离子体允许存在的模式"，正如频谱给出"信号中真实存在的频率成分"。</p>
+<table style="font-size:12px;width:100%;border-collapse:collapse;margin-top:.8rem;">
+  <thead>
+    <tr style="background:var(--bg3);">
+      <th style="padding:.4rem .7rem;border:0.5px solid var(--border);text-align:left;"></th>
+      <th style="padding:.4rem .7rem;border:0.5px solid var(--border);text-align:left;">时间域</th>
+      <th style="padding:.4rem .7rem;border:0.5px solid var(--border);text-align:left;">空间域</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);color:var(--text2);">自变量</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(t\)（秒）</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(x\)（米）</td>
+    </tr>
+    <tr style="background:var(--bg2);">
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);color:var(--text2);">频率变量</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(f\)（Hz）或 \(\omega\)（rad/s）</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(k\)（rad/m，波数）</td>
+    </tr>
+    <tr>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);color:var(--text2);">变换核</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(e^{-i\omega t}\)</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">\(e^{ikx}\)</td>
+    </tr>
+    <tr style="background:var(--bg2);">
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);color:var(--text2);">物理含义</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">信号含哪些时间频率</td>
+      <td style="padding:.4rem .7rem;border:0.5px solid var(--border);">波场含哪些空间波长</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 style="font-size:13px;font-weight:500;color:#e8832a;text-transform:uppercase;letter-spacing:.07em;margin:1.5rem 0 .6rem;">从傅里叶变换到色散关系</h3>
+
+<p>\(\omega\)-\(k\) 图上每一个点 \((k_0,\omega_0)\) 代表一列具体的平面波：</p>
+<div class="eq" style="margin:.5rem 0;">
+  \[f(x,t)=\cos(k_0 x-\omega_0 t)\]
+</div>
+
+<p>其中：\(k_0\) 决定这列波的<strong>空间疏密</strong>（波长 \(\lambda=2\pi/k_0\)）；\(\omega_0\) 决定这列波的<strong>时间快慢</strong>（周期 \(T=2\pi/\omega_0\)）；两者之比 \(\omega_0/k_0\) 决定传播速度。</p>
+
+<p><strong>色散关系曲线 \(D(\omega,k)=0\) 的含义：</strong>这条曲线是一个<strong>筛子</strong>，划定了"这个介质允许哪些平面波存在"——曲线<strong>上</strong>的点对应的平面波能在介质中传播，曲线<strong>外</strong>的点对应的 \((k,\omega)\) 组合在该介质中不被允许。</p>
+
+<div class="callout" style="margin-top:.8rem;">
+  一个真实的波（比如等离子体中的扰动）必须由色散曲线上的点叠加而成。复杂的波可以傅里叶分解成曲线上若干个 \((k,\omega)\) 点的组合——曲线之外的组合在这个介质里根本不能稳定存在。
+</div>
+
+
+
+<script>
+(function(){
+  const dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const BG=dark?'#222018':'#f0ede6';
+  const GR=dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.07)';
+  const AX=dark?'rgba(255,255,255,.2)':'rgba(0,0,0,.18)';
+  const TX=dark?'#8a8680':'#6c6860';
+  const T_END=4,Nt=500,dt=T_END/Nt;
+  let freqs=[2,3],fw=2.0;
+  const Nf=220,fMax=5.5;
+  let specF=[],specM=[];
+  function sig(t){return freqs.reduce((s,f)=>s+Math.cos(2*Math.PI*f*t),0)/freqs.length;}
+  function computeSpec(){
+    specF=[];specM=[];
+    for(let i=0;i<=Nf;i++){
+      const f=i*fMax/Nf;let re=0,im=0;
+      for(let k=0;k<=Nt;k++){const t=k*dt,v=sig(t),a=-2*Math.PI*f*t;re+=v*Math.cos(a)*dt;im+=v*Math.sin(a)*dt;}
+      specF.push(f);specM.push(Math.sqrt(re*re+im*im));
+    }
+  }
+  function cv(id,h){
+    const el=document.getElementById(id);
+    const dpr=window.devicePixelRatio||1;
+    const W=el.parentElement.getBoundingClientRect().width||280;
+    el.width=W*dpr;el.height=h*dpr;el.style.height=h+'px';
+    const ctx=el.getContext('2d');ctx.scale(dpr,dpr);
+    ctx.fillStyle=BG;ctx.fillRect(0,0,W,h);
+    return{ctx,W,H:h};
+  }
+  function drawT(){
+    const{ctx,W,H}=cv('ft2-t',140);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const tx=t=>pl+t/T_END*iW,ty=v=>pt+iH/2-v*iH/2*0.88;
+    ctx.strokeStyle=GR;ctx.lineWidth=0.5;
+    [-1,0,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pl,ty(v));ctx.lineTo(pl+iW,ty(v));ctx.stroke();});
+    [0,1,2,3,4].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pt);ctx.lineTo(tx(t),pt+iH);ctx.stroke();});
+    ctx.strokeStyle=AX;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pl,ty(0));ctx.lineTo(pl+iW,ty(0));ctx.stroke();ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+    ctx.beginPath();ctx.strokeStyle='#e8b840';ctx.lineWidth=2;
+    for(let k=0;k<=Nt;k++){const t=k*dt;k===0?ctx.moveTo(tx(t),ty(sig(t))):ctx.lineTo(tx(t),ty(sig(t)));}
+    ctx.stroke();
+    ctx.fillStyle=TX;ctx.font='10px monospace';
+    [0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t)-3,H-4));
+  }
+  function drawW(){
+    const{ctx,W,H}=cv('ft2-w',140);
+    const re=[],im=[];
+    for(let k=0;k<=Nt;k++){const t=k*dt,v=sig(t),a=-2*Math.PI*fw*t;re.push(v*Math.cos(a));im.push(v*Math.sin(a));}
+    const cx=re.reduce((a,v)=>a+v,0)/re.length,cy=im.reduce((a,v)=>a+v,0)/im.length;
+    const R=Math.max(...re.map(Math.abs),...im.map(Math.abs),0.25)*1.25;
+    const pad=12,sc=Math.min(W-2*pad,H-2*pad)/2/R,ox=W/2,oy=H/2;
+    const px=v=>ox+v*sc,py=v=>oy-v*sc;
+    ctx.strokeStyle=GR;ctx.lineWidth=0.6;const r0=(1/freqs.length)*sc;ctx.beginPath();for(let a=0;a<=360;a++)ctx.lineTo(ox+r0*Math.cos(a*Math.PI/180),oy-r0*Math.sin(a*Math.PI/180));ctx.closePath();ctx.stroke();
+    ctx.strokeStyle=AX;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad,oy);ctx.lineTo(W-pad,oy);ctx.stroke();ctx.beginPath();ctx.moveTo(ox,pad);ctx.lineTo(ox,H-pad);ctx.stroke();
+    for(let k=0;k<re.length-1;k++){const alpha=0.15+0.7*(k/re.length);ctx.strokeStyle=`rgba(232,184,64,${alpha.toFixed(2)})`;ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(px(re[k]),py(im[k]));ctx.lineTo(px(re[k+1]),py(im[k+1]));ctx.stroke();}
+    ctx.strokeStyle='#e04040';ctx.lineWidth=1.2;ctx.setLineDash([3,2]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(px(cx),py(cy));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#e04040';ctx.beginPath();ctx.arc(px(cx),py(cy),5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=TX;ctx.font='10px monospace';ctx.fillText(`(${cx.toFixed(2)}, ${cy.toFixed(2)}i)`,4,H-4);
+  }
+  function drawS(){
+    const{ctx,W,H}=cv('ft2-s',105);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const mMax=Math.max(...specM,0.01)*1.12;
+    const tx=f=>pl+f/fMax*iW,ty=m=>pt+iH-m/mMax*iH;
+    ctx.strokeStyle=GR;ctx.lineWidth=0.5;[0,1,2,3,4,5].forEach(f=>{ctx.beginPath();ctx.moveTo(tx(f),pt);ctx.lineTo(tx(f),pt+iH);ctx.stroke();});
+    ctx.strokeStyle=AX;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pl,pt+iH);ctx.lineTo(pl+iW,pt+iH);ctx.stroke();ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+    const CLINE=dark?'rgba(58,122,212,.45)':'rgba(29,63,138,.35)';
+    ctx.strokeStyle=CLINE;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(tx(fw),pt);ctx.lineTo(tx(fw),pt+iH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(tx(specF[0]),ty(0));specF.forEach((f,i)=>ctx.lineTo(tx(f),ty(specM[i])));ctx.lineTo(tx(specF[specF.length-1]),ty(0));ctx.closePath();
+    ctx.fillStyle=dark?'rgba(58,122,212,.13)':'rgba(29,63,138,.08)';ctx.fill();
+    ctx.beginPath();ctx.strokeStyle='#3a7ad4';ctx.lineWidth=2;specF.forEach((f,i)=>i===0?ctx.moveTo(tx(f),ty(specM[i])):ctx.lineTo(tx(f),ty(specM[i])));ctx.stroke();
+    const idx=Math.min(Math.round(fw/fMax*Nf),specM.length-1);ctx.fillStyle='#e04040';ctx.beginPath();ctx.arc(tx(fw),ty(specM[idx]),5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=TX;ctx.font='10px monospace';[0,1,2,3,4,5].forEach(f=>ctx.fillText(f,tx(f)-3,H-4));ctx.fillText('f / Hz',pl+iW-32,H-4);
+  }
+  function redraw(){drawT();drawW();drawS();}
+  document.getElementById('fw2').addEventListener('input',function(){
+    fw=parseFloat(this.value);document.getElementById('fw2-out').textContent=`f = ${fw.toFixed(2)} Hz`;drawW();drawS();
+  });
+  document.getElementById('sig2').addEventListener('change',function(){
+    freqs=this.value.split(',').map(Number);computeSpec();redraw();
+  });
+  computeSpec();setTimeout(redraw,120);
+  window.addEventListener('resize',()=>setTimeout(redraw,60));
+})();
+</script>
+
+</div>
+<!-- ── 高斯波包笔记 ── -->
+<button class="note-toggle" onclick="toggleNote('note-gauss')" aria-expanded="false" aria-controls="note-gauss" style="margin-top:1rem;">
+  <span class="note-toggle-icon">＋</span> 应用例：高斯波包的傅里叶分解
+</button>
+
+<div class="note-panel" id="note-gauss" hidden>
+  <div class="note-panel-header">
+    <span class="note-panel-title">高斯波包 · 空间傅里叶变换</span>
+    <button class="note-close" onclick="toggleNote('note-gauss')" aria-label="关闭笔记">✕</button>
+  </div>
+  <div class="note-panel-body">
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:0 0 .6rem;">傅里叶变换对</h3>
+    <p>空间傅里叶变换与其逆变换互为一对——正变换把波形分解为各波数成分，逆变换把成分叠加回波形：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[\tilde{f}(k)=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}f(x)\,e^{-ikx}\,dx \quad \text{（正变换：分解）}\]
+    </div>
+    <div class="eq" style="margin:.5rem 0;">
+      \[f(x)=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty}\tilde{f}(k)\,e^{ikx}\,dk \quad \text{（逆变换：合成）}\]
+    </div>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">高斯波包的定义</h3>
+    <p>高斯波包是一个局域振荡的波形——高斯包络乘以载波余弦，宽度由 \(\sigma\) 控制，载波波数为 \(k_0\)：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[f(x)=e^{-x^2/2\sigma^2}\cos(k_0 x)\]
+    </div>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">计算傅里叶变换</h3>
+    <p>用欧拉公式把 \(\cos(k_0x)=\frac{1}{2}(e^{ik_0x}+e^{-ik_0x})\) 展开，分别对两项做变换后合并，结果是两个高斯峰：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[\tilde{f}(k)=\frac{\sigma}{2}\left[e^{-\sigma^2(k-k_0)^2/2}+e^{-\sigma^2(k+k_0)^2/2}\right]\]
+    </div>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">交互演示</h3>
+    <p>拖动滑块改变波包宽度 \(\sigma\) 和载波波数 \(k_0\)，观察空间波形与频谱如何联动。</p>
+
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <label style="font-size:12px;color:var(--text2);min-width:80px;">宽度 σ</label>
+        <input type="range" id="gp-sigma" min="0.3" max="3" step="0.05" value="1.2" style="flex:1;">
+        <code id="gp-sigma-out" style="font-size:12px;min-width:48px;">σ = 1.20</code>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:12px;color:var(--text2);min-width:80px;">载波 k₀</label>
+        <input type="range" id="gp-k0" min="0.5" max="6" step="0.1" value="3" style="flex:1;">
+        <code id="gp-k0-out" style="font-size:12px;min-width:48px;">k₀ = 3.0</code>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">空间波形 f(x)</div>
+        <canvas id="gp-fx" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">频谱 |f̃(k)|</div>
+        <canvas id="gp-fk" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+      </div>
+
+    <div style="margin-top:8px;">
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">分解成分 · 正频率成分 e<sup>+ik₀x</sup>（蓝）与负频率成分 e<sup>−ik₀x</sup>（红）叠加还原 f(x)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <div style="font-size:9px;color:var(--text2);margin-bottom:2px;">正频率成分：\(\frac{1}{2}e^{-x^2/2\sigma^2}\cos(k_0 x)\)（贡献峰在 +k₀）</div>
+          <canvas id="gp-c1" style="width:100%;border-radius:4px;display:block;"></canvas>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--text2);margin-bottom:2px;">负频率成分：\(\frac{1}{2}e^{-x^2/2\sigma^2}\cos(k_0 x)\)（贡献峰在 −k₀）</div>
+          <canvas id="gp-c2" style="width:100%;border-radius:4px;display:block;"></canvas>
+        </div>
+      </div>
+      <div style="font-size:9px;color:var(--text2);margin-top:4px;">两者在空间上形状相同，叠加后恢复原始波包 f(x)。差异体现在频域：正成分只在 +k₀ 有峰，负成分只在 −k₀ 有峰。</div>
+    </div>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .5rem;">不确定性原理</h3>
+    <p>波包越窄（\(\sigma\) 小）→ 频谱越宽（峰越扁）；波包越宽（\(\sigma\) 大）→ 频谱越尖。两者满足：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[\langle\Delta x^2\rangle\langle\Delta k^2\rangle\geq\frac{1}{4}\]
+    </div>
+    <p>两个极端：\(\sigma\to\infty\)（无限宽波包）→ 变成单色平面波，频谱退化为 \(\delta(k-k_0)\)；\(\sigma\to 0\)（无限窄脉冲）→ 频谱完全平坦，包含所有 \(k\)。</p>
+    <p>通过图像，我们可以直观的看到。波包越窄，需要越多频率成分；波包越宽，需要越少频率成分。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const BG=dark?'#222018':'#f0ede6';
+  const GR=dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.07)';
+  const AX=dark?'rgba(255,255,255,.2)':'rgba(0,0,0,.18)';
+  const TX=dark?'#8a8680':'#6c6860';
+
+  let sigma=1.2, k0=3.0;
+  const Nx=500, xMax=8;
+  const Nk=400, kMax=10;
+
+  function cv(id,h){
+    const el=document.getElementById(id);
+    const dpr=window.devicePixelRatio||1;
+    const W=el.parentElement.getBoundingClientRect().width||260;
+    el.width=W*dpr; el.height=h*dpr; el.style.height=h+'px';
+    const ctx=el.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx.fillStyle=BG; ctx.fillRect(0,0,W,h);
+    return{ctx,W,H:h};
+  }
+
+  function drawFx(){
+    const{ctx,W,H}=cv('gp-fx',140);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const tx=x=>pl+(x+xMax)/(2*xMax)*iW;
+    const ty=v=>pt+iH/2-v*iH/2*0.88;
+
+    ctx.strokeStyle=GR; ctx.lineWidth=0.5;
+    [-1,0,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pl,ty(v));ctx.lineTo(pl+iW,ty(v));ctx.stroke();});
+    [-6,-4,-2,0,2,4,6].forEach(x=>{ctx.beginPath();ctx.moveTo(tx(x),pt);ctx.lineTo(tx(x),pt+iH);ctx.stroke();});
+    ctx.strokeStyle=AX; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pl,ty(0));ctx.lineTo(pl+iW,ty(0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+
+    // 包络
+    ctx.beginPath(); ctx.strokeStyle=dark?'rgba(232,184,64,.35)':'rgba(180,140,20,.3)'; ctx.lineWidth=1.2; ctx.setLineDash([3,2]);
+    for(let i=0;i<=Nx;i++){const x=-xMax+2*xMax*i/Nx; const env=Math.exp(-x*x/(2*sigma*sigma)); i===0?ctx.moveTo(tx(x),ty(env)):ctx.lineTo(tx(x),ty(env));}
+    ctx.stroke();
+    ctx.beginPath();
+    for(let i=0;i<=Nx;i++){const x=-xMax+2*xMax*i/Nx; const env=Math.exp(-x*x/(2*sigma*sigma)); i===0?ctx.moveTo(tx(x),ty(-env)):ctx.lineTo(tx(x),ty(-env));}
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // 波形
+    ctx.beginPath(); ctx.strokeStyle='#e8b840'; ctx.lineWidth=2;
+    for(let i=0;i<=Nx;i++){
+      const x=-xMax+2*xMax*i/Nx;
+      const v=Math.exp(-x*x/(2*sigma*sigma))*Math.cos(k0*x);
+      i===0?ctx.moveTo(tx(x),ty(v)):ctx.lineTo(tx(x),ty(v));
+    }
+    ctx.stroke();
+
+    ctx.fillStyle=TX; ctx.font='10px monospace';
+    [-6,-4,-2,0,2,4,6].forEach(x=>ctx.fillText(x,tx(x)-5,H-4));
+    ctx.fillText('x',pl+iW-8,ty(0)-4);
+  }
+
+  function drawFk(){
+    const{ctx,W,H}=cv('gp-fk',140);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const mMax=sigma/2*1.15;
+    const kRange=10;
+    const tx=k=>pl+(k+kRange)/(2*kRange)*iW;
+    const ty=m=>pt+iH-m/mMax*iH;
+
+    ctx.strokeStyle=GR; ctx.lineWidth=0.5;
+    [-8,-6,-4,-2,0,2,4,6,8].forEach(k=>{ctx.beginPath();ctx.moveTo(tx(k),pt);ctx.lineTo(tx(k),pt+iH);ctx.stroke();});    ctx.strokeStyle=AX; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pl,pt+iH);ctx.lineTo(pl+iW,pt+iH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+
+    // k0 标记
+    ctx.strokeStyle=dark?'rgba(224,64,64,.4)':'rgba(180,30,30,.3)'; ctx.lineWidth=1; ctx.setLineDash([3,2]);
+    // 正峰
+    ctx.beginPath();ctx.moveTo(tx(k0),pt);ctx.lineTo(tx(k0),pt+iH);ctx.stroke();
+    // 负峰
+    ctx.beginPath();ctx.moveTo(tx(-k0),pt);ctx.lineTo(tx(-k0),pt+iH);ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 频谱曲线
+    ctx.beginPath(); ctx.strokeStyle='#3a7ad4'; ctx.lineWidth=2;
+    for(let i=0;i<=Nk;i++){
+      const k=-kRange+2*kRange*i/Nk;
+      const m=(sigma/2)*(Math.exp(-sigma*sigma*(k-k0)*(k-k0)/2)+Math.exp(-sigma*sigma*(k+k0)*(k+k0)/2));
+      i===0?ctx.moveTo(tx(k),ty(m)):ctx.lineTo(tx(k),ty(m));
+    }
+    ctx.stroke();
+
+    // 峰值点
+    const peakM=(sigma/2)*(1+Math.exp(-2*sigma*sigma*k0*k0));
+    ctx.fillStyle='#e04040';
+    ctx.beginPath(); ctx.arc(tx(k0),ty(peakM),4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(tx(-k0),ty(peakM),4,0,Math.PI*2); ctx.fill();
+
+    ctx.fillStyle=TX; ctx.font='10px monospace';
+    [-8,-4,0,4,8].forEach(k=>ctx.fillText(k,tx(k)-3,H-4));
+    ctx.fillText('k',pl+iW-8,H-4);
+    ctx.fillStyle='#e04040';
+    ctx.fillText(`k₀=${k0.toFixed(1)}`,tx(k0)+4,pt+12);
+    ctx.fillText(`−k₀`,tx(-k0)+4,pt+12);
+  }
+
+  function drawComponent(id, sign, color){
+    const{ctx,W,H}=cv(id,110);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const tx=x=>pl+(x+xMax)/(2*xMax)*iW;
+    const ty=v=>pt+iH/2-v*iH/2*0.88;
+
+    // 网格
+    ctx.strokeStyle=GR; ctx.lineWidth=0.5;
+    [-1,0,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pl,ty(v));ctx.lineTo(pl+iW,ty(v));ctx.stroke();});
+    [-6,-4,-2,0,2,4,6].forEach(x=>{ctx.beginPath();ctx.moveTo(tx(x),pt);ctx.lineTo(tx(x),pt+iH);ctx.stroke();});
+    ctx.strokeStyle=AX; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pl,ty(0));ctx.lineTo(pl+iW,ty(0));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+
+    // 包络（半高斯）
+    ctx.beginPath();
+    ctx.strokeStyle=dark?'rgba(180,180,180,.2)':'rgba(120,120,120,.2)';
+    ctx.lineWidth=1; ctx.setLineDash([3,2]);
+    for(let i=0;i<=Nx;i++){
+      const x=-xMax+2*xMax*i/Nx;
+      const env=0.5*Math.exp(-x*x/(2*sigma*sigma));
+      i===0?ctx.moveTo(tx(x),ty(env)):ctx.lineTo(tx(x),ty(env));
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    for(let i=0;i<=Nx;i++){
+      const x=-xMax+2*xMax*i/Nx;
+      const env=0.5*Math.exp(-x*x/(2*sigma*sigma));
+      i===0?ctx.moveTo(tx(x),ty(-env)):ctx.lineTo(tx(x),ty(-env));
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // 成分波形：(1/2) * e^{-x²/2σ²} * cos(k0*x)
+    // 正负成分空间波形相同，只是频域贡献不同
+    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2;
+    for(let i=0;i<=Nx;i++){
+      const x=-xMax+2*xMax*i/Nx;
+      const v=0.5*Math.exp(-x*x/(2*sigma*sigma))*Math.cos(k0*x);
+      i===0?ctx.moveTo(tx(x),ty(v)):ctx.lineTo(tx(x),ty(v));
+    }
+    ctx.stroke();
+
+    // 标注
+    ctx.fillStyle=TX; ctx.font='10px monospace';
+    [-6,-4,-2,0,2,4,6].forEach(x=>ctx.fillText(x,tx(x)-5,H-4));
+    ctx.fillStyle=color;
+    ctx.font='10px monospace';
+    ctx.fillText(sign>0?`峰在 k = +${k0.toFixed(1)}`:`峰在 k = −${k0.toFixed(1)}`, pl+4, pt+12);
+  }
+
+  function redraw(){
+    drawFx();
+    drawFk();
+    drawComponent('gp-c1', +1, '#3a7ad4');
+    drawComponent('gp-c2', -1, '#e04040');
+  }
+
+  document.getElementById('gp-sigma').addEventListener('input',function(){
+    sigma=parseFloat(this.value);
+    document.getElementById('gp-sigma-out').textContent=`σ = ${sigma.toFixed(2)}`;
+    redraw();
+  });
+  document.getElementById('gp-k0').addEventListener('input',function(){
+    k0=parseFloat(this.value);
+    document.getElementById('gp-k0-out').textContent=`k₀ = ${k0.toFixed(1)}`;
+    redraw();
+  });
+
+  // 等笔记面板展开后再初始化
+  const btn=document.querySelector('[aria-controls="note-gauss"]');
+  btn.addEventListener('click',function(){
+    setTimeout(redraw,50);
+  });
+})();
+</script>
+
+  <!-- ── 二维傅里叶变换笔记 ── -->
+<button class="note-toggle" onclick="toggleNote('note-2d')" aria-expanded="false" aria-controls="note-2d" style="margin-top:1rem;">
+  <span class="note-toggle-icon">＋</span> 拓展：二维傅里叶变换
+</button>
+
+<div class="note-panel" id="note-2d" hidden>
+  <div class="note-panel-header">
+    <span class="note-panel-title">二维傅里叶变换 · 高斯函数</span>
+    <button class="note-close" onclick="toggleNote('note-2d')" aria-label="关闭笔记">✕</button>
+  </div>
+  <div class="note-panel-body">
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:0 0 .6rem;">定义</h3>
+    <p>二维傅里叶变换把一维操作分别用在 \(x\) 和 \(y\) 两个方向上，每个频域点 \((k_x,k_y)\) 代表一列沿该方向传播的二维平面波：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[\tilde{f}(k_x,k_y)=\frac{1}{2\pi}\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)\,e^{-i(k_xx+k_yy)}\,dx\,dy\]
+    </div>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">可分离时的计算</h3>
+    <p>当 \(f(x,y)=e^{-x^2/2\sigma_x^2}e^{-y^2/2\sigma_y^2}\) 时，二重积分可拆成两个独立的一维高斯积分相乘：</p>
+    <div class="eq" style="margin:.5rem 0;">
+      \[\tilde{f}(k_x,k_y)=\sigma_x\sigma_y\,e^{-\sigma_x^2k_x^2/2}\,e^{-\sigma_y^2k_y^2/2}\]
+    </div>
+    <p>规律：\(x\) 方向越宽（\(\sigma_x\) 大）→ \(k_x\) 方向频谱越窄；\(y\) 方向同理，两个方向的不确定性原理各自独立成立。</p>
+
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">交互演示</h3>
+    <p>拖动滑块分别改变 \(x\)、\(y\) 方向的宽度，观察空间图案与二维频谱如何联动变化。</p>
+
+    <div style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <label style="font-size:12px;color:var(--text2);min-width:90px;">x 方向宽度 σₓ</label>
+        <input type="range" id="g2-sx" min="0.3" max="3" step="0.05" value="1.0" style="flex:1;">
+        <code id="g2-sx-out" style="font-size:12px;min-width:48px;">σₓ = 1.00</code>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:12px;color:var(--text2);min-width:90px;">y 方向宽度 σᵥ</label>
+        <input type="range" id="g2-sy" min="0.3" max="3" step="0.05" value="1.8" style="flex:1;">
+        <code id="g2-sy-out" style="font-size:12px;min-width:48px;">σᵥ = 1.80</code>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">空间图案 f(x,y) · 可拖拽旋转</div>
+        <div id="g2-fx" style="width:100%;height:260px;"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;">频谱 |f̃(kₓ,kᵥ)| · 可拖拽旋转</div>
+        <div id="g2-fk" style="width:100%;height:260px;"></div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text2);margin-top:.5rem;">观察：空间图案在哪个方向更"窄长"，频谱就会在对应方向更"宽扁"——两者形状互为倒数，方向也互相垂直。</p>
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .6rem;">沿x、y方向各自的一维分解</h3>
+    <p>由于 \(f(x,y)\) 可分离，沿 \(x\) 方向切一刀（\(y=0\)）和沿 \(y\) 方向切一刀（\(x=0\)），各自就是独立的一维高斯曲线及其频谱，分别对应各自的傅里叶变换：</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div>
+        <div style="font-size:9px;color:var(--text2);margin-bottom:2px;">x方向剖面 f(x,0)=e<sup>-x²/2σₓ²</sup>，频谱 f̃(kₓ,0)</div>
+        <canvas id="g2-px" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--text2);margin-bottom:2px;">y方向剖面 f(0,y)=e<sup>-y²/2σᵥ²</sup>，频谱 f̃(0,kᵥ)</div>
+        <canvas id="g2-py" style="width:100%;border-radius:4px;display:block;"></canvas>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text2);">蓝色曲线是空间剖面，红色虚线是对应方向的频谱（已归一化便于在同一张图比较宽度）。哪个方向的蓝色曲线更窄，对应的红色虚线就更宽。</p>
+    <h3 style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#e8832a;margin:1rem 0 .5rem;">与等离子体物理的联系</h3>
+    <p>Vlasov 方程中的扰动 \(f_{j1}\propto e^{i(k_xx+k_yy+k_zz-\omega t)}\) 本质上是三维空间加时间的傅里叶变换。本文假设平行传播 \(\mathbf{k}=k\hat{x}\)，即 \(k_y=k_z=0\)，三维问题退化为一维，只需处理 \(\partial_x\to ik\) 这一个方向。</p>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const BG=dark?'#1c1a16':'#f4f1ea';
+  const TX=dark?'#8a8680':'#6c6860';
+  const GR=dark?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';
+  let sx=1.0, sy=1.8;
+  const xMax=4;
+
+  function cv(id,h){
+    const el=document.getElementById(id);
+    const dpr=window.devicePixelRatio||1;
+    const W=el.parentElement.getBoundingClientRect().width||260;
+    el.width=W*dpr; el.height=h*dpr; el.style.height=h+'px';
+    const ctx=el.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx.fillStyle=BG; ctx.fillRect(0,0,W,h);
+    return{ctx,W,H:h,dpr};
+  }
+
+  function lerpColor(t){
+    t=Math.min(1,Math.max(0,t));
+    const bg = dark ? [28,26,22] : [244,241,234];
+    const fg = dark ? [232,184,64] : [216,140,40];
+    const r = bg[0]+(fg[0]-bg[0])*t;
+    const g = bg[1]+(fg[1]-bg[1])*t;
+    const b = bg[2]+(fg[2]-bg[2])*t;
+    return [r,g,b];
+  }
+  
+  const N3=40, xMax2=4, kMax2=5;
+
+function buildGrid(fn, range){
+  const xs=[], ys=[], zs=[];
+  for(let j=0;j<=N3;j++){
+    const v=-range+2*range*j/N3;
+    ys.push(v);
+    const row=[];
+    for(let i=0;i<=N3;i++){
+      const u=-range+2*range*i/N3;
+      if(j===0) xs.push(u);
+      row.push(fn(u,v));
+    }
+    zs.push(row);
+  }
+  return {xs,ys,zs};
+}
+
+  function plotSurface(divId, fn, range, zLabel){
+    const {xs,ys,zs}=buildGrid(fn, range);
+    const data=[{
+      type:'surface',
+      x:xs, y:ys, z:zs,
+      colorscale: dark
+        ? [[0,'rgb(28,26,22)'],[1,'rgb(232,184,64)']]
+        : [[0,'rgb(244,241,234)'],[1,'rgb(216,140,40)']],
+      showscale:false,
+      lighting:{ambient:0.6, diffuse:0.6, specular:0.15}
+    }];
+    const layout={
+      margin:{l:0,r:0,t:0,b:0},
+      paper_bgcolor:'rgba(0,0,0,0)',
+      scene:{
+        xaxis:{title:'x', color:TX, gridcolor:GR},
+        yaxis:{title:'y', color:TX, gridcolor:GR},
+        zaxis:{title:zLabel, color:TX, gridcolor:GR},
+        camera:{eye:{x:1.5,y:-1.5,z:0.9}}
+      }
+    };
+    Plotly.newPlot(divId, data, layout, {displayModeBar:false, responsive:true});
+  }
+
+  function drawFx(){
+  plotSurface('g2-fx', (x,y)=>Math.exp(-(x*x)/(2*sx*sx) - (y*y)/(2*sy*sy)), xMax2, 'f');
+}
+
+function drawFk(){
+  const peakVal=sx*sy;
+  plotSurface('g2-fk', (kx,ky)=>{
+    const v=sx*sy*Math.exp(-sx*sx*kx*kx/2 - sy*sy*ky*ky/2);
+    return v/Math.max(peakVal,0.001);
+  }, kMax2, 'f̃');
+}
+
+
+  function drawProfile(id, sigma, label){
+    const{ctx,W,H,dpr}=cv(id,140);
+    const pl=28,pr=6,pt=8,pb=18,iW=W-pl-pr,iH=H-pt-pb;
+    const xMaxLocal=4, kMaxLocal=5;
+    const tx=u=>pl+(u+xMaxLocal)/(2*xMaxLocal)*iW;
+    const ty=v=>pt+iH-v*(iH-6);
+
+    ctx.strokeStyle=dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+    ctx.lineWidth=0.5;
+    [-1,0,1].forEach(()=>{});
+    [-4,-2,0,2,4].forEach(u=>{ctx.beginPath();ctx.moveTo(tx(u),pt);ctx.lineTo(tx(u),pt+iH);ctx.stroke();});
+    ctx.strokeStyle=dark?'rgba(255,255,255,.2)':'rgba(0,0,0,.18)';
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pl,pt+iH);ctx.lineTo(pl+iW,pt+iH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pl,pt);ctx.lineTo(pl,pt+iH);ctx.stroke();
+
+    ctx.beginPath(); ctx.strokeStyle='#3a7ad4'; ctx.lineWidth=2;
+    for(let i=0;i<=200;i++){
+      const u=-xMaxLocal+2*xMaxLocal*i/200;
+      const v=Math.exp(-u*u/(2*sigma*sigma));
+      i===0?ctx.moveTo(tx(u),ty(v)):ctx.lineTo(tx(u),ty(v));
+    }
+    ctx.stroke();
+
+    ctx.beginPath(); ctx.strokeStyle='#e04040'; ctx.lineWidth=1.6; ctx.setLineDash([4,2]);
+    for(let i=0;i<=200;i++){
+      const u=-xMaxLocal+2*xMaxLocal*i/200;
+      const kk=u*(kMaxLocal/xMaxLocal);
+      const spec=Math.exp(-sigma*sigma*kk*kk/2);
+      i===0?ctx.moveTo(tx(u),ty(spec)):ctx.lineTo(tx(u),ty(spec));
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.fillStyle=TX; ctx.font='10px monospace';
+    [-4,-2,0,2,4].forEach(u=>ctx.fillText(u,tx(u)-5,H-4));
+    ctx.fillStyle='#3a7ad4'; ctx.fillText(`${label}: σ=${sigma.toFixed(2)}`, pl+4, pt+12);
+  }
+
+  function drawProfiles(){
+    drawProfile('g2-px', sx, 'x');
+    drawProfile('g2-py', sy, 'y');
+  }
+
+  function redraw(){ drawFx(); drawFk(); drawProfiles(); }
+  window.redrawFourier2D = redraw;
+  document.getElementById('g2-sx').addEventListener('input',function(){
+    sx=parseFloat(this.value);
+    document.getElementById('g2-sx-out').textContent=`σₓ = ${sx.toFixed(2)}`;
+    redraw();
+  });
+  document.getElementById('g2-sy').addEventListener('input',function(){
+    sy=parseFloat(this.value);
+    document.getElementById('g2-sy-out').textContent=`σᵥ = ${sy.toFixed(2)}`;
+    redraw();
+  });
+
+  const btn=document.querySelector('[aria-controls="note-2d"]');
+  btn.addEventListener('click',function(){
+    setTimeout(redraw,50);
+  });
+})();
+</script>
+</section>
+
+
+<!-- ══ Step 1 ══ -->
+<section id="step1">
+  <h2>Step 1：Vlasov 方程线性化</h2>
+  <p>完整 Vlasov 方程：</p>
+  <div class="eq">
+    \[\frac{\partial f_j}{\partial t}+\mathbf{V}\cdot\nabla f_j+\frac{q_j}{m_j}(\mathbf{E}+\mathbf{V}\times\mathbf{B})\cdot\nabla_v f_j=0\]
+  </div>
+  <p>令 \(f_j=f_{j0}+f_{j1}\)，Fourier 变换（\(\partial_t\to-i\omega\)，\(\partial_x\to ik\)）后保留一阶项：</p>
+  <div class="eq key">
+    \[-i(\omega-kV_x)f_{j1}-\Omega_{cj}\frac{\partial f_{j1}}{\partial\phi}=-\frac{q_j}{m_j}(\tilde{\mathbf{E}}+\mathbf{V}\times\tilde{\mathbf{B}})\cdot\nabla_v f_{j0}\]
+  </div>
+  <p>其中回旋频率 \(\Omega_{cj}=q_jB_0/m_j\)，\(\phi\) 为速度空间回旋相位角：\(V_y=V_\perp\cos\phi\)，\(V_z=V_\perp\sin\phi\)。</p>
+
+  <!-- 补充笔记按钮 -->
+  <button class="note-toggle" onclick="toggleNote('note-step1')" aria-expanded="false" aria-controls="note-step1">
+    <span class="note-toggle-icon">＋</span> 补充笔记
+  </button>
+
+  <!-- 补充笔记内容（默认折叠） -->
+  <div class="note-panel" id="note-step1" hidden>
+    <div class="note-panel-header">
+      <span class="note-panel-title">补充笔记</span>
+      <button class="note-close" onclick="toggleNote('note-step1')" aria-label="关闭笔记">✕</button>
+    </div>
+    <div class="note-panel-body">
+
+  <h3 style="font-size:18px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:#e8832a; margin:0 0 .6rem;">符号说明</h3>
+
+  <p><strong>\(\color{#0077ff}{f_j(\mathbf{r}, \mathbf{V}, t)}\)</strong>：相空间分布函数，表示在位置 \(\mathbf{r}\)、速度 \(\mathbf{V}\)、时刻 \(t\) 附近单位体积内的粒子数，共有 6 个自变量 \((x,y,z,V_x,V_y,V_z)\)。</p>
+
+  <p><strong>\(\color{#0077ff}{\mathbf{V} = (V_x, V_y, V_z)}\)</strong>：速度空间坐标，是相空间的独立变量，不是粒子轨道速度。</p>
+
+  <p><strong>\({\color{#0077ff}\nabla}\)</strong>：位置空间梯度算符 \(\left(\partial_x, \partial_y, \partial_z\right)\)</p>
+
+  <p><strong>\(\color{#0077ff}{\nabla_v}\)</strong>：速度空间梯度算符 \(\left(\partial_{V_x}, \partial_{V_y}, \partial_{V_z}\right)\)。两者作用在不同空间，互相独立。</p>
+<!-- 关于速度空间梯度算符的解释 -->
+  <p>举个例子，假设 \(f = x^2V_x + yV_z^2\)，计算两个梯度：</p>
+  <div class="eq" style="margin:.5rem 0;">
+    \[\nabla f = \left(\frac{\partial f}{\partial x},\ \frac{\partial f}{\partial y},\ \frac{\partial f}{\partial z}\right) = (2xV_x,\ V_z^2,\ 0)\]
+  </div>
+  <div class="eq" style="margin:.5rem 0;">
+  \[\nabla_v f = \left(\frac{\partial f}{\partial V_x},\ \frac{\partial f}{\partial V_y},\ \frac{\partial f}{\partial V_z}\right) = (x^2,\ 0,\ 2yV_z)\]
+  </div>
+  <p>求哪个方向的偏导，就把其余 5 个变量全部当作常数，只对那一个变量求导。</p>
+
+  <p><strong style="color:#e03030;">在 Vlasov 方程里的含义：</strong></p>
+  <p>\(\mathbf{V}\cdot\nabla f\)：粒子在真实空间中移动时，\(f\) 随位置的变化率。</p>
+  <p>\(\dfrac{q}{m}(\mathbf{E}+\mathbf{V}\times\mathbf{B})\cdot\nabla_v f\)：电磁力改变粒子速度时，\(f\) 随速度的变化率。两者合在一起，描述粒子在六维相空间中"流动"时分布函数的全导数。</p>
+
+  <p><strong style="color:#e03030;">坐标选取：</strong></p>
+  <p>本文背景磁场与波矢均沿 \(x\) 方向，\(\mathbf{B}_0 = B_0\hat{x}\)，\(\mathbf{k} = k\hat{x}\)。因此 \(V_x = V_\parallel\) 为平行磁场分量，\(V_y, V_z\) 为垂直分量，用柱坐标表示为 \(V_y = V_\perp\cos\phi\)，\(V_z = V_\perp\sin\phi\)，其中 \(V_\perp = \sqrt{V_y^2+V_z^2}\) 为回旋速度，\(\phi\) 为回旋相位角。</p>
+
+  <h3 style="font-size:18px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:#e8832a; margin:1rem 0 .6rem;">线性化的思路</h3>
+
+  <p>令 \(f_j = f_{j0} + f_{j1}\)，\(\mathbf{E} = \mathbf{E}_1\)，\(\mathbf{B} = \mathbf{B}_0 + \mathbf{B}_1\)，其中下标 0 为平衡量，下标 1 为一阶小扰动。代入 Vlasov 方程后忽略 \(f_{j1}^2\) 等二阶项，得到关于 \(f_{j1}\) 的线性方程，大幅简化求解。</p>
+
+  <p>扰动量具有平面波形式 \(\propto e^{ikx - i\omega t}\)，因此 Fourier 变换给出替换规则：\(\partial_t \to -i\omega\)，\(\partial_x \to ik\)，使偏微分方程变为代数方程。</p>
+
+  <h3 style="font-size:18px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:#e8832a; margin:1rem 0 .6rem;">逐项推导</h3>
+
+  <p><strong>第 1 项 \(\partial f_j / \partial t\)</strong>：平衡态 \(f_{j0}\) 不随时间变化，故 \(\partial f_{j0}/\partial t = 0\)。扰动项经 Fourier 变换得 \(\partial f_{j1}/\partial t = -i\omega f_{j1}\)。</p>
+
+  <p><strong>第 2 项 \(\mathbf{V}\cdot\nabla f_j\)</strong>：平衡分布 \(f_{j0}\) 空间均匀，\(\nabla f_{j0} = 0\)。扰动仅有 \(x\) 方向依赖（\(\mathbf{k} = k\hat{x}\)），故 \(\mathbf{V}\cdot\nabla f_{j1} = V_x \cdot ik \cdot f_{j1}\)。</p>
+
+  <p><strong>第 3 项的零阶部分</strong>：\(\frac{q_j}{m_j}(\mathbf{V}\times\mathbf{B}_0)\cdot\nabla_v f_{j0} = 0\)。因为平衡分布 \(f_{j0}\) 仅依赖 \(V_x\) 和 \(V_\perp^2\)，关于回旋相位 \(\phi\) 完全对称，该项积分为零。</p>
+
+  <p><strong>第 3 项的一阶部分</strong>：分裂为两项——右端驱动项 \(\frac{q_j}{m_j}(\mathbf{E}_1 + \mathbf{V}\times\mathbf{B}_1)\cdot\nabla_v f_{j0}\)（波的电磁场扰动平衡分布），以及左端回旋项 \(\frac{q_j}{m_j}(\mathbf{V}\times\mathbf{B}_0)\cdot\nabla_v f_{j1}\)（背景磁场对扰动分布的作用）。</p>
+
+  <h3 style="font-size:18px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:#e8832a; margin:1rem 0 .6rem;">回旋项如何化为 \(\partial f_{j1}/\partial\phi\)</h3>
+
+  <p>计算叉积：\(\mathbf{V}\times\mathbf{B}_0 = (V_x,V_y,V_z)\times(B_0,0,0) = (0,\; V_z B_0,\; -V_y B_0)\)，代入得：</p>
+  <div class="eq" style="margin:.5rem 0;">
+    \[\frac{q_j}{m_j}(\mathbf{V}\times\mathbf{B}_0)\cdot\nabla_v f_{j1} = \frac{q_jB_0}{m_j}\left(V_z\frac{\partial f_{j1}}{\partial V_y} - V_y\frac{\partial f_{j1}}{\partial V_z}\right)\]
+  </div>
+
+  <p>用柱坐标的链式法则：\(\frac{\partial}{\partial\phi} = -V_\perp\sin\phi\,\frac{\partial}{\partial V_y} + V_\perp\cos\phi\,\frac{\partial}{\partial V_z} = -V_z\frac{\partial}{\partial V_y} + V_y\frac{\partial}{\partial V_z}\)，因此：</p>
+  <div class="eq" style="margin:.5rem 0;">
+    \[V_z\frac{\partial}{\partial V_y} - V_y\frac{\partial}{\partial V_z} = -\frac{\partial}{\partial\phi}\]
+  </div>
+
+  <p>代入并定义回旋频率 \(\Omega_{cj} = q_jB_0/m_j\)，回旋项最终化为 \(-\Omega_{cj}\,\partial f_{j1}/\partial\phi\)。这在物理上表示：背景磁场使粒子在速度空间中以频率 \(\Omega_{cj}\) 绕 \(V_x\) 轴做匀速回旋。</p>
+
+  <h3 style="font-size:18px; font-weight:500; text-transform:uppercase; letter-spacing:.07em; color:#e8832a; margin:1rem 0 .6rem;">各项物理含义</h3>
+
+  <table style="font-size:12px; width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background:var(--bg3);">
+        <th style="padding:.4rem .6rem; border:0.5px solid var(--border); text-align:left;">项</th>
+        <th style="padding:.4rem .6rem; border:0.5px solid var(--border); text-align:left;">数学形式</th>
+        <th style="padding:.4rem .6rem; border:0.5px solid var(--border); text-align:left;">物理含义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">时间变化</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">\(-i\omega f_{j1}\)</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">扰动随时间振荡</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">空间平流</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">\(ikV_x f_{j1}\)</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">粒子携带扰动沿 \(x\) 运动</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">速度空间旋转</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">\(-\Omega_{cj}\,\partial f_{j1}/\partial\phi\)</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">背景磁场使粒子在速度空间中回旋</td>
+      </tr>
+      <tr>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">右端驱动</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">\(-\frac{q_j}{m_j}(\tilde{\mathbf{E}}+\mathbf{V}\times\tilde{\mathbf{B}})\cdot\nabla_v f_{j0}\)</td>
+        <td style="padding:.4rem .6rem; border:0.5px solid var(--border);">波的电磁场扰动平衡分布</td>
+      </tr>
+    </tbody>
+  </table>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ Step 2 ══ -->
+<section id="step2">
+  <h2>Step 2：求解 \(f_{j1}\)</h2>
+
+  <h3>2a. Faraday 定律消去 \(\tilde{\mathbf{B}}\)</h3>
+  <p>横波满足 \(\tilde{\mathbf{B}}=\mathbf{k}\times\tilde{\mathbf{E}}/\omega\)，代入右端化简。</p>
+
+  <h3>2b. R 模投影，对 \(\phi\) 积分</h3>
+  <p>令 \(E_+=E_y+iE_z\)，\(V_+=V_\perp e^{i\phi}\)，对回旋相位积分后得到 \(f_{j1}\)：</p>
+  <div class="eq key">
+    \[f_{j1}=\frac{iq_j}{m_j\omega}\cdot\frac{(\omega-kV_x)\dfrac{\partial f_{j0}}{\partial V_\perp}+kV_\perp\dfrac{\partial f_{j0}}{\partial V_x}}{\omega-kV_x+\Omega_{cj}}\cdot E_+e^{i\phi}\]
+  </div>
+
+  <h3>2c. 代入 Maxwell 分布偏导</h3>
+  <div class="eq">
+    \[\frac{\partial f_{j0}}{\partial V_\perp}=-\frac{2V_\perp}{V_{th,j}^2}f_{j0},\qquad\frac{\partial f_{j0}}{\partial V_x}=-\frac{2(V_x-V_{dj})}{V_{th,j}^2}f_{j0}\]
+  </div>
+  <p>利用恒等式 \((\omega-kV_x)+k(V_x-V_{dj})=\omega-kV_{dj}\) 化简，最终：</p>
+  <div class="eq key">
+    \[f_{j1}=\frac{iq_j}{m_j\omega}\cdot\frac{2V_\perp(\omega-kV_{dj})}{V_{th,j}^2(\omega-kV_x+\Omega_{cj})}\cdot f_{j0}E_+e^{i\phi}\]
+  </div>
+</section>
+
+<!-- ══ Step 3 ══ -->
+<section id="step3">
+  <h2>Step 3：计算 \(J_+\) 与电磁波方程</h2>
+
+  <h3>3a. 建立电磁波方程</h3>
+  <p>Maxwell 方程 Fourier 变换，取 \((y+iz)\) 分量组合 \((\circledast)\)：</p>
+  <div class="eq">
+    \[(\omega^2-k^2c^2)E_++\frac{i\omega}{\varepsilon_0}J_+=0\]
+  </div>
+
+  <h3>3b. 计算 \(J_+\)</h3>
+  <p>\(J_+=\sum_j q_j\int V_+f_{j1}d^3v\)，依次做 \(\phi\) 积分（产生 \(2\pi\) 因子）和 \(V_\perp\) 积分后：</p>
+  <div class="eq key">
+    \[J_+=i\varepsilon_0\sum_j\omega_{pj}^2\frac{\omega-kV_{dj}}{\sqrt{\pi}V_{th,j}}\int_{-\infty}^{\infty}\frac{e^{-(V_x-V_{dj})^2/V_{th,j}^2}}{\omega-kV_x+\Omega_{cj}}dV_x\cdot E_+\]
+  </div>
+</section>
+
+<!-- ══ Step 4 ══ -->
+<section id="step4">
+  <h2>Step 4：引入 \(Z(\zeta)\)</h2>
+
+  <h3>4a. 等离子体色散函数定义</h3>
+  <div class="eq">
+    \[Z(\zeta)=\frac{1}{\sqrt{\pi}}\int_{-\infty}^{\infty}\frac{e^{-\xi^2}}{\xi-\zeta}d\xi\qquad(\operatorname{Im}\zeta>0)\]
+  </div>
+
+  <h3>4b. 共振参数 \(\zeta_j\)</h3>
+  <p>令 \(\xi=(V_x-V_{dj})/V_{th,j}\)，分母变为 \(kV_{th,j}(\xi-\zeta_j)\)，定义：</p>
+  <div class="eq key">
+    \[\zeta_j=\frac{\omega-kV_{dj}+\Omega_{cj}}{kV_{th,j}}\]
+  </div>
+
+  <h3>4c. 化简积分，得色散方程</h3>
+  <div class="eq">
+    \[\int_{-\infty}^\infty\frac{e^{-(V_x-V_{dj})^2/V_{th,j}^2}}{kV_x-\omega-\Omega_{cj}}dV_x=\frac{\sqrt{\pi}}{k}Z(\zeta_j)\]
+  </div>
+  <div class="eq result">
+    \[\omega^2-k^2c^2+\sum_j\omega_{pj}^2\frac{\omega-kV_{dj}}{kV_{th,j}}Z(\zeta_j)=0\]
+  </div>
+</section>
+
+<!-- ══ Final Result ══ -->
+<section id="result">
+  <h2>最终结果：完整色散关系（方程 3）</h2>
+  <div class="eq result">
+    \[\omega^2-k^2c^2
+    +\frac{n_b}{n_0}\omega_{pi}^2\frac{\omega-kV_b}{kV_{th,b}}Z\!\left(\frac{\omega-kV_b+\Omega_i}{kV_{th,b}}\right)\]
+    \[+\left(1-\frac{n_b}{n_0}\right)\omega_{pi}^2\frac{\omega}{kV_{th,m}}Z\!\left(\frac{\omega+\Omega_i}{kV_{th,m}}\right)\]
+    \[+\omega_{pe}^2\frac{\omega-kV_{ed}}{kV_{th,e}}Z\!\left(\frac{\omega-kV_{ed}-\Omega_e}{kV_{th,e}}\right)=0\]
+  </div>
+
+  <h3>共振参数汇总</h3>
+  <table>
+    <thead><tr><th>成分</th><th>\(V_{dj}\)</th><th>\(\Omega_{cj}\)</th><th>\(\zeta_j\)</th></tr></thead>
+    <tbody>
+      <tr><td>束流离子 \(b\)</td><td>\(V_b\)</td><td>\(+\Omega_i\)</td><td>\(\dfrac{\omega-kV_b+\Omega_i}{kV_{th,b}}\)</td></tr>
+      <tr><td>背景离子 \(m\)</td><td>\(0\)</td><td>\(+\Omega_i\)</td><td>\(\dfrac{\omega+\Omega_i}{kV_{th,m}}\)</td></tr>
+      <tr><td>电子 \(e\)</td><td>\(V_{ed}\)</td><td>\(-\Omega_e\)</td><td>\(\dfrac{\omega-kV_{ed}-\Omega_e}{kV_{th,e}}\)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ Physics ══ -->
+<section id="physics">
+  <h2>物理解释</h2>
+  <div class="callout">
+    <strong>反常 Doppler 共振</strong>（束流 \(\zeta_b=0\)）：
+    \(\omega-kV_b+\Omega_i=0\;\Longrightarrow\;\omega-kV_b=-\Omega_i\)
+    <br>在束流静止系中，右手波呈现左手旋转，与束流离子共振，驱动不稳定性。
+  </div>
+  <p>最大增长率约 \(\operatorname{Im}(\omega)\approx0.1\Omega_i\)，对应沿束流传播的波模。</p>
+  <p>在非线性阶段，波将束流离子捕获并产生<strong>相空间团聚</strong>（phase bunching），形成弓激波上游特征的离子分布。</p>
+</section>
+
+<!-- ══ Calculator ══ -->
+<section id="calc">
+  <h2>参数计算器</h2>
+  <p>输入归一化参数（\(\Omega_i=1\)，\(V_A=1\)），实时计算各成分共振参数 \(\zeta_j\)。</p>
+
+  <div class="js-note">
+    <p class="js-note-head">JavaScript 知识点 — 事件监听与 DOM 操作</p>
+    这个计算器用到了：<code>document.querySelectorAll()</code> 批量选取输入框，
+    <code>addEventListener('input', fn)</code> 监听实时输入，
+    以及模板字符串（<code>`${变量}`</code>）动态生成 HTML。
+  </div>
+
+  <div class="interactive">
+    <p class="interactive-label">输入参数</p>
+    <div class="param-grid">
+      <div class="param-item">
+        <label>ω_re / Ω_i（波频实部）</label>
+        <input type="number" id="p_wr" value="0.80" step="0.05">
+      </div>
+      <div class="param-item">
+        <label>γ / Ω_i（增长率虚部）</label>
+        <input type="number" id="p_wi" value="0.10" step="0.01">
+      </div>
+      <div class="param-item">
+        <label>k V_A / Ω_i</label>
+        <input type="number" id="p_k" value="0.90" step="0.05">
+      </div>
+      <div class="param-item">
+        <label>V_b / V_A（束流速度）</label>
+        <input type="number" id="p_vb" value="10" step="0.5">
+      </div>
+      <div class="param-item">
+        <label>V_th,b / V_A</label>
+        <input type="number" id="p_vtb" value="1.0" step="0.1">
+      </div>
+      <div class="param-item">
+        <label>V_th,m / V_A</label>
+        <input type="number" id="p_vtm" value="0.5" step="0.1">
+      </div>
+      <div class="param-item">
+        <label>V_th,e / V_A</label>
+        <input type="number" id="p_vte" value="50" step="1">
+      </div>
+      <div class="param-item">
+        <label>n_b / n_0</label>
+        <input type="number" id="p_nb" value="0.05" step="0.01" min="0" max="1">
+      </div>
+      <div class="param-item">
+        <label>Ω_e / Ω_i（质量比）</label>
+        <input type="number" id="p_oe" value="1836" step="1">
+      </div>
+    </div>
+
+    <p class="interactive-label" style="margin-top:.5rem">共振参数 ζ_j（红色 = 近共振）</p>
+    <div class="result-grid" id="zeta-out"></div>
+  </div>
+</section>
+
+<!-- ══ Z function plot ══ -->
+<section id="zplot">
+  <h2>Z 函数可视化（实数 \(\zeta\)）</h2>
+  <p>对实数 \(\zeta=x\)：\(Z(x)=-2\,\mathrm{Daw}(x)+i\sqrt{\pi}\,e^{-x^2}\)，其中 \(\mathrm{Daw}(x)\) 是 Dawson 积分。</p>
+  <p>悬停画布可读取精确值，拖动滑块调整横轴范围。</p>
+
+  <div class="js-note">
+    <p class="js-note-head">JavaScript 知识点 — Canvas API</p>
+    图像用 <code>canvas.getContext('2d')</code> 绘制。
+    关键方法：<code>ctx.beginPath()</code>、<code>ctx.moveTo(x,y)</code>、<code>ctx.lineTo(x,y)</code>、<code>ctx.stroke()</code>。
+    鼠标位置通过 <code>canvas.addEventListener('mousemove', e =&gt; {...})</code> 获取。
+  </div>
+
+  <div class="slider-row">
+    <label>ζ 范围</label>
+    <input type="range" id="z-range" min="3" max="8" value="5" step="0.5">
+    <output id="z-range-val">±5</output>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="zcanvas"></canvas>
+    <div class="canvas-tooltip" id="ztip"></div>
+  </div>
+
+  <div class="canvas-legend">
+    <span><span class="legend-line" style="background:#3a56d4"></span>Re[Z(ζ)]</span>
+    <span><span class="legend-line" style="background:#c0392b"></span>Im[Z(ζ)]</span>
+    <span><span class="legend-line" style="background:#888;height:1px"></span>零线</span>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- KaTeX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+// 1. 渲染所有 LaTeX 公式
+//    KaTeX 会扫描页面中的 \( \) 和 \[ \] 并替换为数学符号
+// ══════════════════════════════════════════════
+renderMathInElement(document.body, {
+  delimiters: [
+    { left: '\\[', right: '\\]', display: true  },
+    { left: '\\(', right: '\\)', display: false }
+  ],
+  throwOnError: false
+});
+
+
+// ══════════════════════════════════════════════
+// 2. 数学工具函数
+// ══════════════════════════════════════════════
+
+// Dawson 积分: Daw(x) = e^{-x²} ∫₀ˣ e^{t²} dt
+// 小 x 用 Taylor 展开，大 x 用渐近展开
+function dawson(x) {
+  if (Math.abs(x) < 1e-9) return x;
+
+  if (Math.abs(x) <= 4) {
+    // Taylor 级数: Daw(x) = Σ (-2)^n x^{2n+1} / (2n+1)!!
+    let sum  = 0;
+    let term = x;
+    const x2 = x * x;
+    for (let n = 0; n <= 50; n++) {
+      sum += term;
+      term *= -2 * x2 / (2 * n + 3);
+      if (Math.abs(term) < 1e-14 * Math.abs(sum)) break;
+    }
+    return sum;
+  }
+
+  // 渐近展开 (|x| > 4): Daw(x) ≈ 1/(2x) [1 + 1/(2x²) + 3/(4x⁴) + ...]
+  const inv2 = 1 / (x * x);
+  return (0.5 / x) * (1 + 0.5 * inv2 + 0.75 * inv2 * inv2 + 1.875 * Math.pow(inv2, 3));
+}
+
+// Z 函数（实数参数）: Z(x) = -2·Daw(x) + i·√π·e^{-x²}
+function zFunc(x) {
+  return {
+    re: -2 * dawson(x),
+    im: Math.sqrt(Math.PI) * Math.exp(-x * x)
+  };
+}
+
+
+// ══════════════════════════════════════════════
+// 3. 参数计算器
+// ══════════════════════════════════════════════
+
+function readNum(id) {
+  // parseFloat 将字符串转换为浮点数
+  return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function updateCalc() {
+  const wr  = readNum('p_wr');   // ω 实部
+  const wi  = readNum('p_wi');   // ω 虚部（增长率）
+  const k   = readNum('p_k')  || 0.01;
+  const Vb  = readNum('p_vb');
+  const vtb = readNum('p_vtb') || 0.01;
+  const vtm = readNum('p_vtm') || 0.01;
+  const vte = readNum('p_vte') || 0.01;
+  const nb  = readNum('p_nb');
+  const Oe  = readNum('p_oe');   // Ω_e / Ω_i
+
+  const Ved = Vb * nb;           // 电子漂移（电荷守恒）
+
+  // ζ_j = (ω_re - k·V_dj + Ω_cj) / (k·V_th,j)  实部
+  // ζ_j_im = ω_im / (k·V_th,j)                   虚部（总是正的）
+  const specs = [
+    {
+      name : '束流离子 ζ_b',
+      re   : (wr - k * Vb + 1) / (k * vtb),  // Ω_i = 1
+      im   : wi / (k * vtb)
+    },
+    {
+      name : '背景离子 ζ_m',
+      re   : (wr + 1) / (k * vtm),
+      im   : wi / (k * vtm)
+    },
+    {
+      name : '电子 ζ_e',
+      re   : (wr - k * Ved - Oe) / (k * vte),
+      im   : wi / (k * vte)
+    }
+  ];
+
+  // 生成结果卡片 HTML（模板字符串）
+  const html = specs.map(s => {
+    const mag     = Math.sqrt(s.re * s.re + s.im * s.im);
+    const isNear  = mag < 1.5;           // 近共振阈值
+    const signIm  = s.im >= 0 ? '+' : '';
+    const tagText = isNear ? '⚡ 近共振' : (mag > 10 ? '大参数近似适用' : '');
+
+    return `
+      <div class="result-card">
+        <div class="rlabel">${s.name}</div>
+        <div class="rvalue ${isNear ? 'resonant' : ''}">
+          ${s.re.toFixed(3)} ${signIm}${s.im.toFixed(3)}i
+        </div>
+        <div class="rtag">|ζ| = ${mag.toFixed(3)}  ${tagText}</div>
+      </div>`;
+  }).join('');
+
+  // innerHTML 将字符串直接写入 DOM
+  document.getElementById('zeta-out').innerHTML = html;
+}
+
+// 为所有输入框绑定事件监听器
+// querySelectorAll 返回一组元素，forEach 遍历它们
+document.querySelectorAll('.interactive input').forEach(input => {
+  input.addEventListener('input', updateCalc);
+});
+updateCalc();  // 页面加载时立即运行一次
+
+
+// ══════════════════════════════════════════════
+// 4. Z 函数 Canvas 图像
+// ══════════════════════════════════════════════
+
+const canvas  = document.getElementById('zcanvas');
+const ctx     = canvas.getContext('2d');
+const tip     = document.getElementById('ztip');
+let   zRange  = 5;
+
+function drawZ() {
+  // 获取画布的实际显示尺寸
+  const rect = canvas.getBoundingClientRect();
+  const dpr  = window.devicePixelRatio || 1;
+
+  // 设置 canvas 的像素分辨率（高清屏防模糊）
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const W = rect.width;
+  const H = rect.height;
+
+  // 检测深色模式
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // ── 背景 ──
+  ctx.fillStyle = dark ? '#222018' : '#f0ede6';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── 辅助函数：数值到像素坐标 ──
+  // 将 ζ 值映射到水平像素
+  const toX = z => (z + zRange) / (2 * zRange) * W;
+  // 将函数值（范围约 ±√π ≈ ±1.77）映射到垂直像素
+  const toY = v => H / 2 - (v / 2.2) * (H / 2 - 8);
+
+  // ── 网格线 ──
+  ctx.strokeStyle = dark ? '#2e2c24' : '#ddd8cc';
+  ctx.lineWidth   = 0.5;
+  for (let y = -2; y <= 2; y += 0.5) {
+    ctx.beginPath();
+    ctx.moveTo(0,   toY(y));
+    ctx.lineTo(W,   toY(y));
+    ctx.stroke();
+  }
+  for (let x = -Math.floor(zRange); x <= Math.floor(zRange); x++) {
+    ctx.beginPath();
+    ctx.moveTo(toX(x), 0);
+    ctx.lineTo(toX(x), H);
+    ctx.stroke();
+  }
+
+  // ── 零线（加粗）──
+  ctx.strokeStyle = dark ? '#44413a' : '#bbb';
+  ctx.lineWidth   = 1;
+  ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H); ctx.stroke();
+
+  // ── 坐标标签 ──
+  ctx.fillStyle = dark ? '#666' : '#999';
+  ctx.font      = '11px monospace';
+  ctx.fillText(`-${zRange}`, 4,     H / 2 - 5);
+  ctx.fillText(`+${zRange}`, W - 24, H / 2 - 5);
+  ctx.fillText('+√π', 6, 14);
+  ctx.fillText('-√π', 6, H - 5);
+
+  const N = 600;  // 采样点数
+
+  // ── Re[Z(ζ)] 蓝色曲线 ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#3a56d4';
+  ctx.lineWidth   = 2;
+  for (let i = 0; i <= N; i++) {
+    const z  = -zRange + (2 * zRange * i) / N;
+    const px = toX(z);
+    const py = toY(zFunc(z).re);
+    // 第一个点用 moveTo，其余用 lineTo 连线
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+
+  // ── Im[Z(ζ)] 红色曲线 ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#c0392b';
+  ctx.lineWidth   = 2;
+  for (let i = 0; i <= N; i++) {
+    const z  = -zRange + (2 * zRange * i) / N;
+    const px = toX(z);
+    const py = toY(zFunc(z).im);
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+}
+
+// 悬停时显示当前 ζ 处的 Z 值
+canvas.addEventListener('mousemove', function(e) {
+  const rect  = canvas.getBoundingClientRect();
+  const xPx   = e.clientX - rect.left;         // 鼠标在画布上的 x 坐标
+  const zeta  = (xPx / rect.width) * 2 * zRange - zRange;
+  const z     = zFunc(zeta);
+  const signR = z.re >= 0 ? '+' : '';
+  const signI = z.im >= 0 ? '+' : '';
+  tip.textContent = `ζ=${zeta.toFixed(2)}  Re=${z.re.toFixed(3)}  Im=${z.im.toFixed(3)}`;
+  tip.style.display = 'block';
+});
+canvas.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+
+// 滑块控制横轴范围
+document.getElementById('z-range').addEventListener('input', function() {
+  zRange = parseFloat(this.value);
+  document.getElementById('z-range-val').value = `±${zRange}`;
+  drawZ();
+});
+
+window.addEventListener('load',   drawZ);
+window.addEventListener('resize', drawZ);
+
+
+// ══════════════════════════════════════════════
+// 5. 侧边栏高亮当前章节
+//    通过监听 scroll 事件，判断当前可见的 section
+// ══════════════════════════════════════════════
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-list a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    // getBoundingClientRect() 返回元素相对于视口的位置
+    if (sec.getBoundingClientRect().top <= 100) {
+      current = sec.id;
+    }
+  });
+  navLinks.forEach(link => {
+    // toggle(class, condition) 根据条件添加或移除 class
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
+// ── 补充笔记折叠/展开 ──
+// ── 补充笔记折叠/展开 ──
+function toggleNote(id) {
+  const panel  = document.getElementById(id);
+  const btn    = panel.previousElementSibling;
+  const isOpen = !panel.hidden;
+  panel.hidden = isOpen;
+  btn.setAttribute('aria-expanded', String(!isOpen));
+
+  if (!isOpen && id === 'note-2d') {
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if (window.redrawFourier2D) window.redrawFourier2D();
+      });
+    });
+  }
+}
+</script>
+</body>
+</html>
