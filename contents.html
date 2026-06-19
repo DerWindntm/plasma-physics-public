@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contents — DerWindntm</title>
+<link rel="stylesheet" href="nav.css">
+<style>
+.page{padding:3rem;max-width:860px;margin:0 auto;}
+.page h1{font-size:26px;font-weight:500;margin-bottom:.4rem;}
+.sub{font-size:13px;color:#8a8680;margin:.4rem 0 2rem;}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#9a9690;margin-bottom:1rem;margin-top:2rem;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.card{border:0.5px solid #e0ddd8;border-radius:8px;padding:1.25rem 1.5rem;text-decoration:none;color:#1a1814;transition:border-color .15s,background .15s;display:block;}
+.card:hover{border-color:#1a9e85;background:#f4fdf9;}
+.card-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#1a9e85;margin-bottom:.4rem;}
+.card-title{font-size:14px;font-weight:500;line-height:1.5;margin-bottom:.3rem;}
+.card-desc{font-size:12px;color:#9a9690;line-height:1.6;}
+.coming{border:0.5px dashed #e0ddd8;border-radius:8px;padding:1.25rem 1.5rem;color:#c0bdb8;font-size:13px;font-style:italic;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">DerWindntm</a>
+  <ul class="nav-items">
+    <li class="nav-item">
+      <a class="nav-link" href="contents.html">Contents</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="notes-info.html">Notes Info</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="programming.html">Programming Skills</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="contact.html">Contact with Me</a>
+    </li>
+  </ul>
+</nav>
+<div class="page">
+  <h1>Contents</h1>
+  <p class="sub">All notes and resources, organized by topic.</p>
+
+  <div class="section-label">Plasma Physics</div>
+  <div class="cards">
+    <a class="card" href="hoshino1985.html">
+      <div class="card-tag">Plasma Physics</div>
+      <div class="card-title">Dispersion Relation D(&omega;, k)</div>
+      <div class="card-desc">Derivation following Hoshino &amp; Terasawa (1985). Covers Vlasov equation linearization, Z-function, and the full dispersion relation for R-mode waves.</div>
+    </a>
+    <a class="card" href="marin2025.html">
+      <div class="card-tag">Plasma Physics</div>
+      <div class="card-title">Marin 2025 Notes</div>
+      <div class="card-desc">Personal lecture notes from Marin 2025.</div>
+    </a>
+  </div>
+
+  <div class="section-label">AI</div>
+  <div class="cards">
+    <div class="coming">Coming soon</div>
+  </div>
+</div>
+</body>
+</html>

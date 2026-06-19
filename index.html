@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DerWindntm — Personal Notes</title>
+<link rel="stylesheet" href="nav.css">
+<style>
+.hero{padding:5rem 3rem 3rem;max-width:860px;margin:0 auto;}
+.hero h1{font-size:36px;font-weight:500;margin-bottom:.8rem;}
+.hero p{font-size:16px;color:#5c5852;max-width:540px;line-height:1.8;margin-bottom:2rem;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:860px;margin:0 auto;padding:0 3rem 5rem;}
+.card{border:0.5px solid #e0ddd8;border-radius:8px;padding:1.25rem 1.5rem;text-decoration:none;color:#1a1814;transition:border-color .15s,background .15s;display:block;}
+.card:hover{border-color:#1a9e85;background:#f4fdf9;}
+.card-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#1a9e85;margin-bottom:.4rem;}
+.card-title{font-size:14px;font-weight:500;line-height:1.5;}
+.card-sub{font-size:12px;color:#9a9690;margin-top:.3rem;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">DerWindntm</a>
+  <ul class="nav-items">
+    <li class="nav-item">
+      <a class="nav-link" href="contents.html">Contents</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="notes-info.html">Notes Info</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="programming.html">Programming Skills</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="contact.html">Contact with Me</a>
+    </li>
+  </ul>
+</nav>
+<div class="hero">
+  <h1>Welcome やっほ！</h1>
+  <p>A personal site collecting notes on plasma physics, AI, and programming. Browse the notes or leave a message on the contact page.</p>
+</div>
+<div class="cards">
+  <a class="card" href="contents.html">
+    <div class="card-label">All Notes</div>
+    <div class="card-title">Browse Contents</div>
+    <div class="card-sub">Plasma physics, AI, and more</div>
+  </a>
+  <a class="card" href="hoshino1985.html">
+    <div class="card-label">Plasma Physics</div>
+    <div class="card-title">Dispersion Relation D(&omega;, k)</div>
+    <div class="card-sub">Hoshino &amp; Terasawa 1985</div>
+  </a>
+  <a class="card" href="marin2025.html">
+    <div class="card-label">Plasma Physics</div>
+    <div class="card-title">Marin 2025 Notes</div>
+    <div class="card-sub">Personal lecture notes</div>
+  </a>
+  <a class="card" href="contact.html">
+    <div class="card-label">Contact</div>
+    <div class="card-title">Leave a Message</div>
+    <div class="card-sub">Comments &amp; replies welcome</div>
+  </a>
+</div>
+</body>
+</html>
