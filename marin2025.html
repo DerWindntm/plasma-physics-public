@@ -248,6 +248,19 @@ body.lang-ja [data-lang="ja"].inline-lang{display:inline}
           <li><a href="#gns-decoder"><span data-lang="zh">解码器与输出</span><span data-lang="en">Decoder &amp; Output</span><span data-lang="ja">デコーダと出力</span></a></li>
         </ul>
       </li>
+      <li>
+        <a href="#dataset">
+          <span data-lang="zh">5. 原文数据集及结构说明</span>
+          <span data-lang="en">5. Dataset &amp; Structure</span>
+          <span data-lang="ja">5. データセットと構造説明</span>
+        </a>
+        <ul class="nav-sublist">
+          <li><a href="#dataset-link"><span data-lang="zh">数据集链接</span><span data-lang="en">Dataset Link</span><span data-lang="ja">データセットリンク</span></a></li>
+          <li><a href="#dataset-top"><span data-lang="zh">顶层结构</span><span data-lang="en">Top-level Structure</span><span data-lang="ja">トップレベル構造</span></a></li>
+          <li><a href="#dataset-npz"><span data-lang="zh">NPZ 样本字段</span><span data-lang="en">NPZ Sample Fields</span><span data-lang="ja">NPZ サンプルフィールド</span></a></li>
+          <li><a href="#dataset-meta"><span data-lang="zh">元数据说明</span><span data-lang="en">Metadata</span><span data-lang="ja">メタデータ</span></a></li>
+        </ul>
+      </li>
     </ul>
   </div>
   <div class="nav-section">
@@ -993,6 +1006,260 @@ body.lang-ja [data-lang="ja"].inline-lang{display:inline}
     <span data-lang="en">The decoder is an MLP <strong>with no hidden layers</strong> (i.e. a linear map), directly mapping the 209-dimensional latent vector to physical predictions: particle nodes output acceleration for the next time step, field nodes output E-field values. Notably, the decoder does <strong>not</strong> apply layer normalisation (the paper specifically notes this is the only MLP whose output is not normalised). Acceleration is then integrated with leapfrog to update particle velocities and positions, and a new graph is constructed for the next rollout step.</span>
     <span data-lang="ja">デコーダは<strong>隠れ層を持たない</strong> MLP（線形写像）であり、209 次元の潜在ベクトルを物理的な予測量に直接マッピングします：粒子ノードは次のタイムステップの加速度を、場ノードは電場値を出力します。注目すべき点として、デコーダは<strong>層正規化を適用しません</strong>（論文では、他のすべての MLP の出力は正規化されるが、デコーダだけが例外であると明記されています）。加速度は蛙跳び積分によって粒子の速度と位置の更新に用いられ、新しいグラフが構築されて次のロールアウトステップへと続きます。</span>
   </p>
+</section>
+
+<!-- ══ 5. 数据集说明 ══ -->
+<section id="dataset">
+  <h2>
+    <span data-lang="zh">5. 原文数据集及结构说明</span>
+    <span data-lang="en">5. Dataset &amp; Structure</span>
+    <span data-lang="ja">5. データセットと構造説明</span>
+  </h2>
+  <p>
+    <span data-lang="zh">论文作者已将训练好的模型权重和全部模拟数据公开发布在 Zenodo 平台，任何人均可免费下载用于复现或进一步研究。数据集总大小约 64.4 GB，采用 CC-BY 4.0 协议开放。</span>
+    <span data-lang="en">The authors have publicly released all trained model weights and simulation data on Zenodo under the CC-BY 4.0 licence, freely available for reproduction or further research. The total dataset size is approximately 64.4 GB.</span>
+    <span data-lang="ja">論文の著者は、学習済みモデルの重みとすべてのシミュレーションデータを Zenodo プラットフォームに公開しており、CC-BY 4.0 ライセンスのもとで誰でも無料でダウンロードし、再現研究や発展的研究に利用できます。データセットの総サイズは約 64.4 GB です。</span>
+  </p>
+
+  <!-- 数据集链接 -->
+  <h3 class="subsection-title" id="dataset-link">
+    <span data-lang="zh">数据集链接</span>
+    <span data-lang="en">Dataset Link</span>
+    <span data-lang="ja">データセットリンク</span>
+  </h3>
+  <div class="callout" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:.3rem">
+        <span data-lang="zh">Zenodo 数据集页面</span>
+        <span data-lang="en">Zenodo Dataset Page</span>
+        <span data-lang="ja">Zenodo データセットページ</span>
+      </div>
+      <div style="font-size:12px;opacity:.8">DOI: 10.5281/zenodo.14941475</div>
+    </div>
+    <a href="https://zenodo.org/records/14941475" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .9rem;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;flex-shrink:0;transition:opacity .15s"
+       onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      <span style="font-size:15px">↗</span>
+      <span data-lang="zh">前往数据集</span>
+      <span data-lang="en">Go to Dataset</span>
+      <span data-lang="ja">データセットへ</span>
+    </a>
+  </div>
+
+  <!-- 顶层结构 -->
+  <h3 class="subsection-title" id="dataset-top">
+    <span data-lang="zh">顶层结构：两个压缩包</span>
+    <span data-lang="en">Top-level Structure: Two Archives</span>
+    <span data-lang="ja">トップレベル構造：2 つのアーカイブ</span>
+  </h3>
+  <p>
+    <span data-lang="zh">数据集由两个压缩包构成，体积差异悬殊：</span>
+    <span data-lang="en">The dataset consists of two archives with very different sizes:</span>
+    <span data-lang="ja">データセットは体積が大きく異なる 2 つのアーカイブで構成されています：</span>
+  </p>
+
+  <div class="compare-grid lang-all">
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon cpu" style="font-size:10px">模型</div>
+        <div>
+          <div class="compare-card-title">models.zip</div>
+          <div class="compare-card-sub">49.3 MB</div>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <span data-lang="zh">包含模型 A、B、C 各一个目录</span>
+          <span data-lang="en">One directory per model (A, B, C)</span>
+          <span data-lang="ja">モデル A、B、C それぞれのディレクトリ</span>
+        </li>
+        <li>
+          <strong>hyperparameters.json</strong>
+          <span data-lang="zh"> — 超参数配置</span>
+          <span data-lang="en"> — hyperparameter config</span>
+          <span data-lang="ja"> — ハイパーパラメータ設定</span>
+        </li>
+        <li>
+          <strong>model-*.pt</strong>
+          <span data-lang="zh"> — 训练好的网络权重（PyTorch 格式）</span>
+          <span data-lang="en"> — trained weights (PyTorch format)</span>
+          <span data-lang="ja"> — 学習済み重み（PyTorch 形式）</span>
+        </li>
+        <li>
+          <strong>train_state-*.pt</strong>
+          <span data-lang="zh"> — 优化器状态，可用于继续训练</span>
+          <span data-lang="en"> — optimizer state, for resuming training</span>
+          <span data-lang="ja"> — オプティマイザ状態（学習再開用）</span>
+        </li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon gpu" style="font-size:10px">数据</div>
+        <div>
+          <div class="compare-card-title">data.zip</div>
+          <div class="compare-card-sub">64.3 GB</div>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <strong>train.npz</strong>
+          <span data-lang="zh"> — 940 个训练样本</span>
+          <span data-lang="en"> — 940 training samples</span>
+          <span data-lang="ja"> — 訓練サンプル 940 件</span>
+        </li>
+        <li>
+          <strong>validation.npz</strong>
+          <span data-lang="zh"> — 30 个验证样本</span>
+          <span data-lang="en"> — 30 validation samples</span>
+          <span data-lang="ja"> — 検証サンプル 30 件</span>
+        </li>
+        <li>
+          <strong>test.npz</strong>
+          <span data-lang="zh"> — 30 个测试样本</span>
+          <span data-lang="en"> — 30 test samples</span>
+          <span data-lang="ja"> — テストサンプル 30 件</span>
+        </li>
+        <li>
+          <strong>metadata_short/long_timestep.json</strong>
+          <span data-lang="zh"> — 归一化统计量</span>
+          <span data-lang="en"> — normalisation statistics</span>
+          <span data-lang="ja"> — 正規化統計量</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:.5rem">
+    <span data-lang="zh">模型 A 使用 <code>metadata_short_timestep.json</code>（时间步 0.15 ms）；模型 B 和 C 使用 <code>metadata_long_timestep.json</code>（时间步 0.60 ms，每隔四个快照取一个）。两套元数据的归一化统计量不同，使用时必须对应正确的文件。</span>
+    <span data-lang="en">Model A uses <code>metadata_short_timestep.json</code> (0.15 ms step); Models B and C use <code>metadata_long_timestep.json</code> (0.60 ms step, every 4th snapshot). The normalisation statistics differ between the two — always use the matching file.</span>
+    <span data-lang="ja">モデル A は <code>metadata_short_timestep.json</code>（0.15 ms ステップ）を使用し、モデル B・C は <code>metadata_long_timestep.json</code>（0.60 ms ステップ、4 ステップごとに 1 スナップショット）を使用します。二つのメタデータの正規化統計量は異なるため、必ず対応するファイルを使用してください。</span>
+  </div>
+
+  <!-- NPZ 字段 -->
+  <h3 class="subsection-title" id="dataset-npz">
+    <span data-lang="zh">NPZ 文件内部：每个样本的字段</span>
+    <span data-lang="en">Inside the NPZ: Fields per Sample</span>
+    <span data-lang="ja">NPZ ファイルの内部：サンプルごとのフィールド</span>
+  </h3>
+  <p>
+    <span data-lang="zh">每个 <code>.npz</code> 文件包含一个样本列表（每个样本对应一次完整的 EPOCH 模拟），可用以下 Python 代码加载：</span>
+    <span data-lang="en">Each <code>.npz</code> file contains a list of samples (one per EPOCH simulation run), loadable with:</span>
+    <span data-lang="ja">各 <code>.npz</code> ファイルには、（EPOCH シミュレーション 1 回に対応する）サンプルのリストが含まれており、以下の Python コードで読み込めます：</span>
+  </p>
+  <div class="eq lang-all" style="font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre">import numpy as np
+with np.load('train.npz', allow_pickle=True) as f:
+    data = f['gns_data']   # list of dicts</div>
+
+  <p style="margin-top:.9rem">
+    <span data-lang="zh">每个样本字典包含以下字段：</span>
+    <span data-lang="en">Each sample dictionary contains the following fields:</span>
+    <span data-lang="ja">各サンプルの辞書には以下のフィールドが含まれます：</span>
+  </p>
+
+  <table class="lang-all">
+    <thead>
+      <tr>
+        <th><span data-lang="zh">字段名</span><span data-lang="en">Field</span><span data-lang="ja">フィールド名</span></th>
+        <th><span data-lang="zh">形状</span><span data-lang="en">Shape</span><span data-lang="ja">形状</span></th>
+        <th><span data-lang="zh">含义与单位</span><span data-lang="en">Meaning &amp; Unit</span><span data-lang="ja">意味と単位</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>particle_weights</code></td>
+        <td><code>(N_粒子,)</code></td>
+        <td><span data-lang="zh">每个超粒子的权重（代表真实粒子数）</span><span data-lang="en">Weight per superparticle (number of real particles represented)</span><span data-lang="ja">各超粒子の重み（代表する実粒子数）</span></td>
+      </tr>
+      <tr>
+        <td><code>particle_positions</code></td>
+        <td><code>(N_粒子, N_快照, 1)</code></td>
+        <td><span data-lang="zh">每个粒子在每个快照的位置（米）</span><span data-lang="en">Position of each particle at each snapshot (metres)</span><span data-lang="ja">各スナップショットにおける各粒子の位置（メートル）</span></td>
+      </tr>
+      <tr>
+        <td><code>momenta</code></td>
+        <td><code>(N_粒子, N_快照, 1)</code></td>
+        <td><span data-lang="zh">每个粒子在每个快照的动量（kg·m/s）</span><span data-lang="en">Momentum of each particle at each snapshot (kg·m/s)</span><span data-lang="ja">各スナップショットにおける各粒子の運動量（kg·m/s）</span></td>
+      </tr>
+      <tr>
+        <td><code>grid_positions</code></td>
+        <td><code>(400,)</code></td>
+        <td><span data-lang="zh">400 个电场格点的位置（米）</span><span data-lang="en">Positions of 400 electric field grid points (metres)</span><span data-lang="ja">400 個の電場グリッド点の位置（メートル）</span></td>
+      </tr>
+      <tr>
+        <td><code>electric_field</code></td>
+        <td><code>(400, N_快照, 3)</code></td>
+        <td><span data-lang="zh">每个格点在每个快照的电场 xyz 分量（N/C）；实际有效分量为 x</span><span data-lang="en">E-field x/y/z components at each grid point and snapshot (N/C); only x is physically relevant</span><span data-lang="ja">各グリッド点・各スナップショットの電場 xyz 成分（N/C）；物理的に有意なのは x 成分のみ</span></td>
+      </tr>
+      <tr>
+        <td><code>magnetic_field</code></td>
+        <td><code>(400, N_快照, 3)</code></td>
+        <td><span data-lang="zh">磁场 xyz 分量（T）；1D 模拟中磁场为零</span><span data-lang="en">B-field x/y/z components (T); zero in this 1-D simulation</span><span data-lang="ja">磁場 xyz 成分（T）；この 1 次元シミュレーションではゼロ</span></td>
+      </tr>
+      <tr>
+        <td><code>num_left</code> / <code>num_right</code></td>
+        <td><span data-lang="zh">整数</span><span data-lang="en">int</span><span data-lang="ja">整数</span></td>
+        <td><span data-lang="zh">向左/向右运动的束各自的粒子数（各 1600）</span><span data-lang="en">Number of particles in the left/right beam (1600 each)</span><span data-lang="ja">左向き／右向きのビームの粒子数（各 1600）</span></td>
+      </tr>
+      <tr>
+        <td><code>simulation_time</code></td>
+        <td><code>(N_快照,)</code></td>
+        <td><span data-lang="zh">每个快照对应的模拟时间（秒）</span><span data-lang="en">Simulated time at each snapshot (seconds)</span><span data-lang="ja">各スナップショットに対応する模拟時間（秒）</span></td>
+      </tr>
+      <tr>
+        <td><code>temp</code></td>
+        <td><span data-lang="zh">浮点数</span><span data-lang="en">float</span><span data-lang="ja">浮動小数点数</span></td>
+        <td><span data-lang="zh">电子束初始温度（K），从 0 到 10⁵ K 均匀随机采样</span><span data-lang="en">Initial beam temperature (K), uniformly sampled from 0 to 10⁵ K</span><span data-lang="ja">電子ビームの初期温度（K）、0〜10⁵ K から一様にランダムサンプリング</span></td>
+      </tr>
+      <tr>
+        <td><code>drift_p</code></td>
+        <td><span data-lang="zh">浮点数</span><span data-lang="en">float</span><span data-lang="ja">浮動小数点数</span></td>
+        <td><span data-lang="zh">初始漂移动量大小（kg·m/s），从 0 到 5×10⁻²⁴ 均匀随机采样</span><span data-lang="en">Initial drift momentum magnitude (kg·m/s), sampled from 0 to 5×10⁻²⁴</span><span data-lang="ja">初期ドリフト運動量の大きさ（kg·m/s）、0〜5×10⁻²⁴ から一様サンプリング</span></td>
+      </tr>
+      <tr>
+        <td><code>dens</code></td>
+        <td><span data-lang="zh">浮点数</span><span data-lang="en">float</span><span data-lang="ja">浮動小数点数</span></td>
+        <td><span data-lang="zh">初始电子数密度（每束每米个数），从 5 到 40 均匀随机采样</span><span data-lang="en">Initial electron number density per beam (per metre), sampled from 5 to 40</span><span data-lang="ja">各ビームの初期電子数密度（1 メートルあたり）、5〜40 から一様サンプリング</span></td>
+      </tr>
+      <tr>
+        <td><code>original_index</code></td>
+        <td><span data-lang="zh">字符串</span><span data-lang="en">string</span><span data-lang="ja">文字列</span></td>
+        <td><span data-lang="zh">该样本的唯一 ID</span><span data-lang="en">Unique ID for this sample</span><span data-lang="ja">このサンプルの一意な ID</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 元数据 -->
+  <h3 class="subsection-title" id="dataset-meta">
+    <span data-lang="zh">元数据 JSON 的字段说明</span>
+    <span data-lang="en">Metadata JSON Fields</span>
+    <span data-lang="ja">メタデータ JSON のフィールド説明</span>
+  </h3>
+  <p>
+    <span data-lang="zh">元数据文件记录了训练集的全局统计信息，主要用于对输入特征和输出目标进行归一化。GNS 在训练和推理时需要用这些值把速度、加速度、电场等量缩放到均值 0、标准差 1 的范围（粒子权重缩放到 [0,1]）。</span>
+    <span data-lang="en">The metadata files record global statistics of the training set, primarily used to normalise input features and output targets. During training and inference, the GNS uses these values to scale velocities, accelerations, and fields to zero mean and unit standard deviation (particle weights to [0, 1]).</span>
+    <span data-lang="ja">メタデータファイルは訓練セットのグローバルな統計量を記録しており、主に入力特徴量と出力ターゲットの正規化に使用されます。GNS は学習・推論時にこれらの値を使い、速度・加速度・電場などを平均 0・標準偏差 1 にスケーリングします（粒子重みは [0, 1] にスケーリング）。</span>
+  </p>
+
+  <table class="lang-all">
+    <thead>
+      <tr>
+        <th><span data-lang="zh">字段</span><span data-lang="en">Field</span><span data-lang="ja">フィールド</span></th>
+        <th><span data-lang="zh">用途</span><span data-lang="en">Purpose</span><span data-lang="ja">用途</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>bounds</code></td><td><span data-lang="zh">模拟箱空间边界（米）</span><span data-lang="en">Spatial bounds of simulation box (m)</span><span data-lang="ja">シミュレーション箱の空間境界（m）</span></td></tr>
+      <tr><td><code>sequence_length</code></td><td><span data-lang="zh">每个模拟的快照总数（1001）</span><span data-lang="en">Total snapshots per simulation (1001)</span><span data-lang="ja">各シミュレーションの総スナップショット数（1001）</span></td></tr>
+      <tr><td><code>default_connectivity_radius</code></td><td><span data-lang="zh">默认连接半径（米）</span><span data-lang="en">Default connectivity radius (m)</span><span data-lang="ja">デフォルト接続半径（m）</span></td></tr>
+      <tr><td><code>dim</code></td><td><span data-lang="zh">空间维度数（= 1）</span><span data-lang="en">Number of spatial dimensions (= 1)</span><span data-lang="ja">空間次元数（= 1）</span></td></tr>
+      <tr><td><code>dt</code></td><td><span data-lang="zh">快照之间的时间步（秒）</span><span data-lang="en">Time step between snapshots (s)</span><span data-lang="ja">スナップショット間の時間ステップ（s）</span></td></tr>
+      <tr><td><code>vel_mean</code> / <code>vel_std</code></td><td><span data-lang="zh">速度的均值和标准差，用于归一化输入速度特征</span><span data-lang="en">Mean and std of velocities, used to normalise velocity input features</span><span data-lang="ja">速度の平均と標準偏差（速度入力特徴量の正規化用）</span></td></tr>
+      <tr><td><code>acc_mean</code> / <code>acc_std</code></td><td><span data-lang="zh">加速度的均值和标准差，用于归一化网络输出</span><span data-lang="en">Mean and std of accelerations, used to normalise network outputs</span><span data-lang="ja">加速度の平均と標準偏差（ネットワーク出力の正規化用）</span></td></tr>
+      <tr><td><code>E_mean</code> / <code>E_std</code></td><td><span data-lang="zh">电场各分量的均值和标准差，用于归一化电场输入特征</span><span data-lang="en">Mean and std of E-field components, for normalising E-field input features</span><span data-lang="ja">電場各成分の平均と標準偏差（電場入力特徴量の正規化用）</span></td></tr>
+      <tr><td><code>weight_max</code> / <code>weight_min</code></td><td><span data-lang="zh">粒子权重的最大最小值，用于将权重归一化到 [0, 1]</span><span data-lang="en">Max/min particle weight, used to normalise weights to [0, 1]</span><span data-lang="ja">粒子重みの最大値・最小値（重みを [0, 1] に正規化するために使用）</span></td></tr>
+    </tbody>
+  </table>
 </section>
 
 <footer style="margin-top:4rem;padding-top:1.5rem;border-top:.5px solid var(--border);font-size:12px;color:var(--text2);line-height:1.8">
