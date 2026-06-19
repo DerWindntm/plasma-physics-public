@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIC 方法步骤说明 — Particle-in-Cell</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<style>
+:root {
+  --bg:#f9f8f5;--bg2:#f0ede6;--bg3:#e8e4db;--text:#1a1814;--text2:#5c5852;
+  --accent:#1d3f8a;--accent2:#e8edfa;--red:#b83030;--border:#d8d4ca;
+  --mono:'SF Mono','Cascadia Code','Fira Code',monospace;
+  --sans:'Helvetica Neue','PingFang SC','Microsoft YaHei',Arial,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#181714;--bg2:#222018;--bg3:#2a2820;--text:#e4e0d8;--text2:#8a8680;
+  --accent:#7b9cf0;--accent2:#1a2240;--red:#e06060;--border:#38352c;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);font-size:15px;line-height:1.8;color:var(--text);background:var(--bg)}
+.page{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;padding:2.5rem 1rem 2rem 1.5rem;border-right:.5px solid var(--border);background:var(--bg)}
+.sidebar-logo{font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text2);margin-bottom:1.5rem}
+.nav-section{margin-bottom:1.25rem}
+.nav-heading{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:.4rem;padding-left:.5rem}
+.nav-list{list-style:none}
+.nav-list li+li{margin-top:1px}
+.nav-list a{display:block;font-size:13px;color:var(--text2);text-decoration:none;padding:.28rem .5rem;border-radius:4px;transition:background .12s,color .12s}
+.nav-list a:hover,.nav-list a.active{color:var(--accent);background:var(--accent2)}
+.nav-list a.active{font-weight:500}
+.nav-sublist{list-style:none;margin-top:1px}
+.nav-sublist li+li{margin-top:1px}
+.nav-sublist a{display:block;font-size:12px;color:var(--text2);text-decoration:none;padding:.24rem .5rem .24rem 1.1rem;border-radius:4px;transition:background .12s,color .12s;position:relative}
+.nav-sublist a::before{content:'';position:absolute;left:.5rem;top:50%;width:4px;height:.5px;background:var(--border)}
+.nav-sublist a:hover,.nav-sublist a.active{color:var(--accent);background:var(--accent2)}
+.nav-sublist a.active{font-weight:500}
+.main{padding:3rem 3.5rem 5rem;max-width:1000px;margin:0 auto}
+.page-header{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:.5px solid var(--border)}
+.page-header h1{font-size:24px;font-weight:500;line-height:1.35;margin-bottom:.6rem}
+.ref{font-size:13px;color:var(--text2);font-style:italic;line-height:1.6}
+section{margin-bottom:3rem;scroll-margin-top:1.5rem}
+h2{font-size:17px;font-weight:500;margin-bottom:1.25rem;padding-bottom:.5rem;border-bottom:.5px solid var(--border)}
+h3{font-size:14px;font-weight:500;margin:1.5rem 0 .6rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.subsection-title{font-size:16px;font-weight:500;color:var(--text);margin:2.25rem 0 1rem;padding-bottom:.4rem;border-bottom:.5px dashed var(--border)}
+p{margin-bottom:.9rem}
+.eq{overflow-x:auto;padding:.9rem 1.1rem;margin:.8rem 0;background:var(--bg2);border-radius:6px;border:.5px solid var(--border);font-size:14px}
+.eq.key{border-left:3px solid var(--accent)}
+.eq.result{border-left:3px solid var(--red);background:var(--bg3)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:.8rem 0}
+th{padding:.55rem .8rem;font-weight:500;background:var(--bg2);border:.5px solid var(--border);text-align:left}
+td{padding:.55rem .8rem;border:.5px solid var(--border)}
+.callout{background:var(--accent2);border-left:3px solid var(--accent);padding:.75rem 1rem;border-radius:0 6px 6px 0;margin:1rem 0;font-size:14px}
+.step-flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:1.25rem 0;font-size:12px;color:var(--text2)}
+.step-flow .node{font-family:var(--mono);font-size:12px;padding:.3rem .6rem;background:var(--bg2);border:.5px solid var(--border);border-radius:5px;color:var(--text)}
+.step-flow .arrow{color:var(--text2)}
+.step-card{border:.5px solid var(--border);border-radius:8px;background:var(--bg2);margin:1rem 0;overflow:hidden}
+.step-card-head{display:flex;align-items:baseline;gap:.6rem;padding:.85rem 1.1rem;border-bottom:.5px solid var(--border);background:var(--bg3)}
+.step-num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.03em}
+.step-title{font-size:14px;font-weight:500}
+.step-card-body{padding:1rem 1.1rem}
+.step-card-body p:last-child{margin-bottom:0}
+.interactive{background:var(--bg2);border:.5px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin-top:1rem}
+.interactive-label{font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:1rem}
+.param-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.75rem 1rem;margin-bottom:1rem}
+.param-item label{display:block;font-size:12px;color:var(--text2);margin-bottom:.3rem}
+.param-item input{width:100%;padding:.35rem .6rem;font-size:13px;font-family:var(--mono);border:.5px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);outline:none}
+.param-item input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent2)}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem}
+.result-card{background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:.65rem .9rem}
+.result-card .rlabel{font-size:11px;color:var(--text2);margin-bottom:.2rem}
+.result-card .rvalue{font-family:var(--mono);font-size:13px;font-weight:500;word-break:break-all}
+.result-card .rtag{font-size:11px;color:var(--text2);margin-top:3px}
+.warn-val{color:var(--red)!important}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.slider-row label{font-size:12px;color:var(--text2);min-width:96px}
+.slider-row input[type=range]{flex:1;min-width:120px}
+.slider-row code{font-family:var(--mono);font-size:12px;min-width:70px;text-align:right}
+.canvas-wrap{position:relative;margin:1rem 0}
+canvas{display:block;width:100%;border-radius:5px}
+#boriscanvas{height:230px;cursor:crosshair}
+.canvas-legend{display:flex;gap:1.25rem;font-size:12px;color:var(--text2);margin-top:.5rem;flex-wrap:wrap}
+.canvas-legend span{display:flex;align-items:center;gap:5px}
+.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+.js-note{border:.5px solid var(--border);border-radius:6px;padding:.65rem 1rem;margin:1rem 0;font-size:13px}
+.js-note-head{font-weight:500;color:var(--accent);font-size:12px;margin-bottom:.25rem}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:.1em .4em;border-radius:3px}
+.note-toggle{display:inline-flex;align-items:center;gap:.35rem;margin-top:.6rem;padding:.28rem .7rem;font-size:12px;font-family:var(--sans);color:var(--text2);background:transparent;border:.5px solid var(--border);border-radius:4px;cursor:pointer;transition:background .12s,color .12s,border-color .12s}
+.note-toggle:hover{color:var(--accent);border-color:var(--accent);background:var(--accent2)}
+.note-toggle-icon{font-size:14px;line-height:1;transition:transform .2s}
+.note-toggle[aria-expanded="true"] .note-toggle-icon{transform:rotate(45deg)}
+.note-panel{margin-top:.6rem;border:.5px solid var(--border);border-left:3px solid var(--text2);border-radius:0 6px 6px 0;background:var(--bg2);font-size:13px;color:var(--text2);animation:note-in .15s ease}
+@keyframes note-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.note-panel-header{display:flex;justify-content:space-between;align-items:center;padding:.5rem .9rem;border-bottom:.5px solid var(--border)}
+.note-panel-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+.note-close{background:transparent;border:none;cursor:pointer;font-size:13px;color:var(--text2);padding:0 .2rem;line-height:1;transition:color .12s}
+.note-close:hover{color:var(--text)}
+.note-panel-body{padding:.8rem .9rem;line-height:1.75}
+.note-panel-body p{margin-bottom:.7rem}
+.note-panel-body p:last-child{margin-bottom:0}
+.note-panel-body strong{color:var(--text);font-weight:500}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.25rem 0}
+.compare-card{border:.5px solid var(--border);border-radius:8px;background:var(--bg2);padding:1.1rem 1.25rem}
+.compare-card-head{display:flex;align-items:center;gap:.55rem;margin-bottom:.85rem;padding-bottom:.65rem;border-bottom:.5px solid var(--border)}
+.compare-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;flex-shrink:0}
+.compare-icon.cpu{background:var(--accent2);color:var(--accent)}
+.compare-icon.gpu{background:color-mix(in srgb,var(--red) 14%,var(--bg));color:var(--red)}
+.compare-card-title{font-size:14px;font-weight:500}
+.compare-card-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.compare-card ul{list-style:none}
+.compare-card li{font-size:13px;line-height:1.7;padding:.35rem 0 .35rem 1.1rem;position:relative;color:var(--text2)}
+.compare-card li::before{content:'·';position:absolute;left:.15rem;color:var(--text2)}
+.compare-card li strong{color:var(--text);font-weight:500}
+.compare-card li+li{border-top:.5px dashed var(--border)}
+
+/* ── Language Switcher ── */
+.lang-switcher{position:fixed;top:1rem;right:1.25rem;z-index:1000;display:flex;flex-direction:column;align-items:flex-end;gap:.35rem}
+.lang-btn-current{display:flex;align-items:center;gap:.45rem;padding:.38rem .75rem;font-size:12px;font-weight:500;font-family:var(--sans);color:var(--text2);background:var(--bg2);border:.5px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(0,0,0,.07);letter-spacing:.02em}
+.lang-btn-current:hover{color:var(--accent);border-color:var(--accent);background:var(--accent2)}
+.lang-btn-current .lang-globe{font-size:14px;opacity:.7}
+.lang-btn-current .lang-chevron{font-size:10px;transition:transform .2s;opacity:.6}
+.lang-btn-current.open .lang-chevron{transform:rotate(180deg)}
+.lang-dropdown{display:none;flex-direction:column;gap:2px;background:var(--bg);border:.5px solid var(--border);border-radius:8px;padding:.35rem;box-shadow:0 4px 16px rgba(0,0,0,.12);min-width:130px;animation:drop-in .15s ease}
+@keyframes drop-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.lang-dropdown.open{display:flex}
+.lang-option{display:flex;align-items:center;gap:.5rem;padding:.38rem .65rem;font-size:12px;font-weight:500;font-family:var(--sans);color:var(--text2);background:transparent;border:none;border-radius:5px;cursor:pointer;text-align:left;transition:background .1s,color .1s;white-space:nowrap}
+.lang-option:hover{background:var(--accent2);color:var(--accent)}
+.lang-option.active{color:var(--accent);background:var(--accent2)}
+.lang-option .lang-flag{font-size:15px}
+.lang-option .lang-name{flex:1}
+.lang-option .lang-check{font-size:11px;color:var(--accent);opacity:0}
+.lang-option.active .lang-check{opacity:1}
+
+/* hide/show by lang */
+[data-lang]{display:none}
+body.lang-zh [data-lang="zh"]{display:block}
+body.lang-en [data-lang="en"]{display:block}
+body.lang-ja [data-lang="ja"]{display:block}
+body.lang-zh [data-lang="zh"].inline-lang,
+body.lang-en [data-lang="en"].inline-lang,
+body.lang-ja [data-lang="ja"].inline-lang{display:inline}
+/* elements that show in all langs */
+.lang-all{display:block}
+.lang-all-inline{display:inline}
+
+@media(max-width:680px){
+  .page{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:1.5rem}
+  .result-grid{grid-template-columns:1fr}
+  .compare-grid{grid-template-columns:1fr}
+  .lang-switcher{top:.6rem;right:.75rem}
+}
+</style>
+</head>
+<body class="lang-zh">
+
+<!-- ══ Language Switcher ══ -->
+<div class="lang-switcher" id="langSwitcher">
+  <button class="lang-btn-current" id="langCurrentBtn" onclick="toggleLangMenu()" aria-label="切换语言">
+    <span class="lang-globe">🌐</span>
+    <span id="langCurrentLabel">简体中文</span>
+    <span class="lang-chevron">▾</span>
+  </button>
+  <div class="lang-dropdown" id="langDropdown">
+    <button class="lang-option active" data-lang-target="zh" onclick="setLang('zh')">
+      <span class="lang-flag">🇨🇳</span>
+      <span class="lang-name">简体中文</span>
+      <span class="lang-check">✓</span>
+    </button>
+    <button class="lang-option" data-lang-target="en" onclick="setLang('en')">
+      <span class="lang-flag">🇬🇧</span>
+      <span class="lang-name">English</span>
+      <span class="lang-check">✓</span>
+    </button>
+    <button class="lang-option" data-lang-target="ja" onclick="setLang('ja')">
+      <span class="lang-flag">🇯🇵</span>
+      <span class="lang-name">日本語</span>
+      <span class="lang-check">✓</span>
+    </button>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ══ Sidebar ══ -->
+<nav class="sidebar" aria-label="页面导航">
+  <p class="sidebar-logo">Plasma Physics</p>
+  <div class="nav-section">
+    <!-- Nav heading -->
+    <p class="nav-heading">
+      <span data-lang="zh">章节</span>
+      <span data-lang="en">Sections</span>
+      <span data-lang="ja">章節</span>
+    </p>
+    <ul class="nav-list">
+      <li>
+        <a href="#loop">
+          <span data-lang="zh">1. PIC 的步骤说明</span>
+          <span data-lang="en">1. PIC Algorithm Steps</span>
+          <span data-lang="ja">1. PIC アルゴリズムの手順</span>
+        </a>
+        <ul class="nav-sublist">
+          <li><a href="#intro"><span data-lang="zh">PIC 方法简介</span><span data-lang="en">Introduction to PIC</span><span data-lang="ja">PIC 法の概要</span></a></li>
+          <li><a href="#superparticle"><span data-lang="zh">超粒子与网格</span><span data-lang="en">Superparticles &amp; Grid</span><span data-lang="ja">超粒子とグリッド</span></a></li>
+          <li><a href="#interp-to-particle"><span data-lang="zh">1a. 场→粒子插值</span><span data-lang="en">1a. Field→Particle Interp.</span><span data-lang="ja">1a. 場→粒子補間</span></a></li>
+          <li><a href="#push"><span data-lang="zh">1b. 粒子推进（Boris）</span><span data-lang="en">1b. Particle Push (Boris)</span><span data-lang="ja">1b. 粒子プッシュ（Boris）</span></a></li>
+          <li><a href="#interp-to-grid"><span data-lang="zh">1c. 粒子→网格插值</span><span data-lang="en">1c. Particle→Grid Interp.</span><span data-lang="ja">1c. 粒子→グリッド補間</span></a></li>
+          <li><a href="#fieldsolve"><span data-lang="zh">1d. 场求解（FDTD）</span><span data-lang="en">1d. Field Solve (FDTD)</span><span data-lang="ja">1d. 場の解法（FDTD）</span></a></li>
+          <li><a href="#cfl"><span data-lang="zh">CFL 稳定性条件</span><span data-lang="en">CFL Stability Condition</span><span data-lang="ja">CFL 安定性条件</span></a></li>
+          <li><a href="#summary"><span data-lang="zh">整体循环总结</span><span data-lang="en">Full Loop Summary</span><span data-lang="ja">全体ループのまとめ</span></a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#cpu-gpu">
+          <span data-lang="zh">2. CPU 与 GPU 的区别</span>
+          <span data-lang="en">2. CPU vs GPU</span>
+          <span data-lang="ja">2. CPU と GPU の違い</span>
+        </a>
+        <ul class="nav-sublist">
+          <li><a href="#cpu-gpu-same"><span data-lang="zh">相同点</span><span data-lang="en">Similarities</span><span data-lang="ja">共通点</span></a></li>
+          <li><a href="#cpu-gpu-diff"><span data-lang="zh">设计哲学差异</span><span data-lang="en">Design Philosophy</span><span data-lang="ja">設計思想の違い</span></a></li>
+          <li><a href="#cpu-gpu-context"><span data-lang="zh">与 PIC / GNN 的关系</span><span data-lang="en">Relation to PIC / GNN</span><span data-lang="ja">PIC / GNN との関係</span></a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#hyperparam">
+          <span data-lang="zh">3. 超参数优化</span>
+          <span data-lang="en">3. Hyperparameter Optimization</span>
+          <span data-lang="ja">3. ハイパーパラメータ最適化</span>
+        </a>
+        <ul class="nav-sublist">
+          <li><a href="#hyperparam-def"><span data-lang="zh">什么是超参数</span><span data-lang="en">What is a Hyperparameter?</span><span data-lang="ja">ハイパーパラメータとは</span></a></li>
+          <li><a href="#hyperparam-vs-param"><span data-lang="zh">与普通参数的对比</span><span data-lang="en">vs. Regular Parameters</span><span data-lang="ja">通常パラメータとの比較</span></a></li>
+          <li><a href="#hyperparam-examples"><span data-lang="zh">论文中的具体超参数</span><span data-lang="en">Hyperparams in This Paper</span><span data-lang="ja">論文中の具体例</span></a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#gns-arch">
+          <span data-lang="zh">4. GNS 神经网络示意图</span>
+          <span data-lang="en">4. GNS Architecture</span>
+          <span data-lang="ja">4. GNS ネットワーク構造図</span>
+        </a>
+        <ul class="nav-sublist">
+          <li><a href="#gns-overview"><span data-lang="zh">总体结构</span><span data-lang="en">Overview</span><span data-lang="ja">全体構造</span></a></li>
+          <li><a href="#gns-encoder"><span data-lang="zh">编码器</span><span data-lang="en">Encoder</span><span data-lang="ja">エンコーダ</span></a></li>
+          <li><a href="#gns-processor"><span data-lang="zh">处理器（消息传递）</span><span data-lang="en">Processor (Message Passing)</span><span data-lang="ja">プロセッサ（メッセージパス）</span></a></li>
+          <li><a href="#gns-decoder"><span data-lang="zh">解码器与输出</span><span data-lang="en">Decoder &amp; Output</span><span data-lang="ja">デコーダと出力</span></a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="nav-section">
+    <p class="nav-heading">
+      <span data-lang="zh">交互工具</span>
+      <span data-lang="en">Interactive Tools</span>
+      <span data-lang="ja">インタラクティブツール</span>
+    </p>
+    <ul class="nav-list">
+      <li><a href="#cfl-calc"><span data-lang="zh">CFL 计算器</span><span data-lang="en">CFL Calculator</span><span data-lang="ja">CFL 計算機</span></a></li>
+      <li><a href="#boris-demo"><span data-lang="zh">Boris 推进演示</span><span data-lang="en">Boris Pusher Demo</span><span data-lang="ja">Boris 法デモ</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══ Main ══ -->
+<main class="main">
+
+<header class="page-header">
+  <h1>
+    <span data-lang="zh">质点网格法（PIC）及与 GNN 的结合</span>
+    <span data-lang="en">Particle-In-Cell (PIC) Method and GNN Integration</span>
+    <span data-lang="ja">粒子セルイン法（PIC）と GNN の融合</span>
+  </h1>
+  <p class="ref">
+    <span data-lang="zh">Particle-in-Cell method — 等离子体动态模拟的核心算法<br>参考文献：Mlinarević et al. (2025). Particle-based plasma simulation using a graph neural network. arXiv:2503.00274.</span>
+    <span data-lang="en">Particle-in-Cell method — core algorithm for plasma dynamic simulation<br>Reference: Mlinarević et al. (2025). Particle-based plasma simulation using a graph neural network. arXiv:2503.00274.</span>
+    <span data-lang="ja">粒子セルイン法 — プラズマ動態シミュレーションの中核アルゴリズム<br>参考文献：Mlinarević et al. (2025). Particle-based plasma simulation using a graph neural network. arXiv:2503.00274.</span>
+  </p>
+</header>
+
+<!-- ══ 1. PIC ══ -->
+<section id="loop">
+  <h2>
+    <span data-lang="zh">1. PIC 的步骤说明</span>
+    <span data-lang="en">1. PIC Algorithm Steps</span>
+    <span data-lang="ja">1. PIC アルゴリズムの手順</span>
+  </h2>
+
+  <h3 class="subsection-title" id="intro">
+    <span data-lang="zh">PIC 方法简介</span>
+    <span data-lang="en">Introduction to PIC</span>
+    <span data-lang="ja">PIC 法の概要</span>
+  </h3>
+  <p>
+    <span data-lang="zh">质点网格法（PIC）是目前用于模拟等离子体动态行为最广泛使用的方法之一。作为一种成熟且确立已久的方法，现代 PIC 代码能够高效地扩展到目前最大规模的超级计算机上运行，而这种大规模计算能力往往是模拟真实世界现象所需足够分辨率的前提条件。</span>
+    <span data-lang="en">The Particle-In-Cell (PIC) method is one of the most widely used approaches to simulating plasma dynamics. As a mature and well-established method, modern PIC codes can efficiently scale to the largest supercomputers available, which is often required to provide sufficient resolution for real-world phenomena.</span>
+    <span data-lang="ja">粒子セルイン法（PIC 法）は、プラズマ動態のシミュレーションに最も広く使用されている手法の一つです。成熟した確立済みの手法として、現代の PIC コードは現存する最大規模のスーパーコンピュータへ効率的にスケールでき、現実世界の現象を十分な解像度でシミュレートするために必要とされています。</span>
+  </p>
+  <p>
+    <span data-lang="zh">PIC 代码的核心包含两个相互耦合的求解器：<strong>粒子推进器（particle pusher）</strong>和<strong>场求解器（field solver）</strong>。两者通过插值操作交替工作，在离散时间步中不断更新超粒子的位置、动量，以及网格上的电场和磁场。</span>
+    <span data-lang="en">At its core, a PIC code contains two coupled solvers: the <strong>particle pusher</strong> and the <strong>field solver</strong>. They work alternately via interpolation, updating superparticle positions and momenta together with electric and magnetic fields on the grid at each discrete time step.</span>
+    <span data-lang="ja">PIC コードの核心は、<strong>粒子プッシャー</strong>と<strong>場ソルバー</strong>という二つの連成ソルバーです。この二つは補間操作を介して交互に動作し、離散的な時間ステップごとに超粒子の位置・運動量と、グリッド上の電磁場を更新します。</span>
+  </p>
+
+  <h3 class="subsection-title" id="superparticle">
+    <span data-lang="zh">超粒子与网格</span>
+    <span data-lang="en">Superparticles &amp; Grid</span>
+    <span data-lang="ja">超粒子とグリッド</span>
+  </h3>
+  <p>
+    <span data-lang="zh">等离子体粒子被建模为所谓的<strong>超粒子（superparticle）</strong>，每个超粒子代表大量真实粒子。例如，一个超粒子可能代表 \(10^5\) 个电子。超粒子存在于连续的相空间中，其集体行为在统计意义上代表了对应真实等离子体系统的行为。电场和磁场则定义在一个<strong>离散网格</strong>上。</span>
+    <span data-lang="en">Plasma particles are modelled as <strong>superparticles</strong>, each representing a large number of real particles — for example, \(10^5\) electrons. Superparticles exist in continuous phase space, and their collective behaviour statistically represents the real plasma. Electric and magnetic fields are defined on a <strong>discrete grid</strong>.</span>
+    <span data-lang="ja">プラズマ粒子は<strong>超粒子（スーパーパーティクル）</strong>としてモデル化され、各超粒子は多数の実粒子（例：電子 \(10^5\) 個）を表します。超粒子は連続的な位相空間に存在し、その集合的挙動が実際のプラズマ系を統計的に表現します。電磁場は<strong>離散グリッド</strong>上で定義されます。</span>
+  </p>
+  <div class="callout">
+    <span data-lang="zh">粒子（continuous）与网格（discrete）是 PIC 方法的两套坐标系统，算法的核心工作就是让信息在这两套系统之间<strong>来回插值</strong>。</span>
+    <span data-lang="en">Particles (continuous) and the grid (discrete) are two coordinate systems in PIC. The core task of the algorithm is to <strong>interpolate information back and forth</strong> between them.</span>
+    <span data-lang="ja">粒子（連続）とグリッド（離散）は PIC 法の二つの座標系です。アルゴリズムの核心は、この二つの系の間で情報を<strong>相互に補間する</strong>ことです。</span>
+  </div>
+
+  <h3 class="subsection-title">
+    <span data-lang="zh">四步循环总览</span>
+    <span data-lang="en">Four-Step Loop Overview</span>
+    <span data-lang="ja">4 ステップループの概要</span>
+  </h3>
+
+  <div class="step-flow lang-all">
+    <span class="node">E_g, B_g</span>
+    <span class="arrow">──►</span>
+    <span class="node">E_p, B_p</span>
+    <span class="arrow">──►</span>
+    <span class="node">x_p, v_p</span>
+    <span class="arrow">──►</span>
+    <span class="node">ρ_g, J_g</span>
+    <span class="arrow">──►</span>
+    <span class="node">E_g, B_g (n+1)</span>
+  </div>
+
+  <div class="step-card lang-all">
+    <div class="step-card-head"><span class="step-num">STEP 1</span><span class="step-title"><span data-lang="zh">场到粒子的插值</span><span data-lang="en">Field-to-Particle Interpolation</span><span data-lang="ja">場から粒子への補間</span></span></div>
+    <div class="step-card-body"><p><span data-lang="zh">将网格上的场值插值到每个超粒子所在的位置。</span><span data-lang="en">Interpolate field values from the grid to each superparticle's position.</span><span data-lang="ja">グリッド上の場の値を各超粒子の位置へ補間する。</span></p></div>
+  </div>
+  <div class="step-card lang-all">
+    <div class="step-card-head"><span class="step-num">STEP 2</span><span class="step-title"><span data-lang="zh">粒子推进（求解洛伦兹力方程）</span><span data-lang="en">Particle Push (Lorentz Force)</span><span data-lang="ja">粒子プッシュ（ローレンツ力方程式）</span></span></div>
+    <div class="step-card-body"><p><span data-lang="zh">求解洛伦兹力作为粒子的运动方程，更新每个超粒子的位置与动量。</span><span data-lang="en">Solve the Lorentz force equation of motion and update each superparticle's position and momentum.</span><span data-lang="ja">ローレンツ力を運動方程式として解き、各超粒子の位置と運動量を更新する。</span></p></div>
+  </div>
+  <div class="step-card lang-all">
+    <div class="step-card-head"><span class="step-num">STEP 3</span><span class="step-title"><span data-lang="zh">粒子到网格的插值</span><span data-lang="en">Particle-to-Grid Interpolation</span><span data-lang="ja">粒子からグリッドへの補間</span></span></div>
+    <div class="step-card-body"><p><span data-lang="zh">将由粒子运动产生的电荷密度和电流插值回场网格上。</span><span data-lang="en">Interpolate charge density and current from particle motion back onto the field grid.</span><span data-lang="ja">粒子運動による電荷密度と電流をグリッドへ補間して戻す。</span></p></div>
+  </div>
+  <div class="step-card lang-all">
+    <div class="step-card-head"><span class="step-num">STEP 4</span><span class="step-title"><span data-lang="zh">场求解</span><span data-lang="en">Field Solve</span><span data-lang="ja">場の計算</span></span></div>
+    <div class="step-card-body"><p><span data-lang="zh">求解麦克斯韦方程组，更新网格上的电场和磁场值。</span><span data-lang="en">Solve Maxwell's equations to update electric and magnetic field values on the grid.</span><span data-lang="ja">マクスウェル方程式を解き、グリッド上の電磁場を更新する。</span></p></div>
+  </div>
+
+  <p>
+    <span data-lang="zh">时间步长的选取必须满足著名的 <strong>CFL 条件</strong>：\(\Delta t < \Delta x / c\)。</span>
+    <span data-lang="en">The time step must satisfy the <strong>CFL condition</strong>: \(\Delta t < \Delta x / c\).</span>
+    <span data-lang="ja">時間ステップは有名な <strong>CFL 条件</strong> \(\Delta t < \Delta x / c\) を満たす必要があります。</span>
+  </p>
+</section>
+
+<!-- 1a -->
+<section id="interp-to-particle">
+  <h3 class="subsection-title">
+    <span data-lang="zh">1a. 场到粒子的插值（Field Interpolation）</span>
+    <span data-lang="en">1a. Field-to-Particle Interpolation</span>
+    <span data-lang="ja">1a. 場から粒子への補間</span>
+  </h3>
+  <div class="eq key lang-all">
+    \[\mathbf{E}(\mathbf{x}_p)=\sum_g W(\mathbf{x}_p-\mathbf{x}_g)\,\mathbf{E}_g\]
+    \[\mathbf{B}(\mathbf{x}_p)=\sum_g W(\mathbf{x}_p-\mathbf{x}_g)\,\mathbf{B}_g\]
+  </div>
+  <p>
+    <span data-lang="zh">其中 \(W\) 为<strong>形状函数（shape function）</strong>，常用线性插值（CIC, Cloud-in-Cell）。</span>
+    <span data-lang="en">Here \(W\) is the <strong>shape function</strong>, commonly a linear (Cloud-in-Cell, CIC) interpolation.</span>
+    <span data-lang="ja">\(W\) は<strong>形状関数（shape function）</strong>であり、一般に線形補間（CIC: クラウドインセル）が用いられます。</span>
+  </p>
+
+  <button class="note-toggle" onclick="toggleNote('note-cic')" aria-expanded="false" aria-controls="note-cic">
+    <span class="note-toggle-icon">＋</span>
+    <span data-lang="zh">补充笔记：什么是形状函数 W？</span>
+    <span data-lang="en">Note: What is the shape function W?</span>
+    <span data-lang="ja">補足：形状関数 W とは？</span>
+  </button>
+  <div class="note-panel" id="note-cic" hidden>
+    <div class="note-panel-header">
+      <span class="note-panel-title"><span data-lang="zh">补充笔记</span><span data-lang="en">Note</span><span data-lang="ja">補足</span></span>
+      <button class="note-close" onclick="toggleNote('note-cic')">✕</button>
+    </div>
+    <div class="note-panel-body">
+      <p><span data-lang="zh">粒子的位置一般不会恰好落在网格点上，形状函数 \(W\) 按距离把网格值线性分配给粒子（或反向收集）。一维 CIC 形式：</span><span data-lang="en">A particle's position rarely coincides with a grid point exactly. The shape function \(W\) distributes grid values to particles (or collects them back) proportionally by distance. The 1-D CIC form:</span><span data-lang="ja">粒子の位置がグリッド点と一致することは稀です。形状関数 \(W\) は距離に比例してグリッド値を粒子に分配（あるいは逆方向に収集）します。1 次元 CIC 形式：</span></p>
+      <div class="eq lang-all" style="margin:.5rem 0">\[W(\mathbf{x}_p-\mathbf{x}_g)=\max\!\left(0,1-\frac{|\mathbf{x}_p-\mathbf{x}_g|}{\Delta x}\right)\]</div>
+    </div>
+  </div>
+</section>
+
+<!-- 1b -->
+<section id="push">
+  <h3 class="subsection-title">
+    <span data-lang="zh">1b. 粒子推进（Boris 算法）</span>
+    <span data-lang="en">1b. Particle Push — Boris Algorithm</span>
+    <span data-lang="ja">1b. 粒子プッシュ — Boris 法</span>
+  </h3>
+  <div class="eq lang-all">\[\frac{d\mathbf{p}}{dt}=q(\mathbf{E}+\mathbf{v}\times\mathbf{B}),\qquad\frac{d\mathbf{x}}{dt}=\mathbf{v}\]</div>
+
+  <h3><span data-lang="zh">第一步 — 半步电场加速</span><span data-lang="en">Step 1 — Half electric acceleration</span><span data-lang="ja">ステップ 1 — 電場の半ステップ加速</span></h3>
+  <div class="eq key lang-all">\[\mathbf{p}^{-}=\mathbf{p}^{n-1/2}+\frac{q\Delta t}{2}\mathbf{E}^n\]</div>
+  <h3><span data-lang="zh">第二步 — 磁场旋转</span><span data-lang="en">Step 2 — Magnetic rotation</span><span data-lang="ja">ステップ 2 — 磁場回転</span></h3>
+  <div class="eq key lang-all">
+    \[\mathbf{t}=\frac{q\Delta t}{2m}\mathbf{B}^n,\quad\mathbf{s}=\frac{2\mathbf{t}}{1+t^2},\quad\mathbf{p}'=\mathbf{p}^{-}+\mathbf{p}^{-}\times\mathbf{t},\quad\mathbf{p}^{+}=\mathbf{p}^{-}+\mathbf{p}'\times\mathbf{s}\]
+  </div>
+  <h3><span data-lang="zh">第三步 — 半步电场加速</span><span data-lang="en">Step 3 — Half electric acceleration</span><span data-lang="ja">ステップ 3 — 電場の半ステップ加速</span></h3>
+  <div class="eq key lang-all">\[\mathbf{p}^{n+1/2}=\mathbf{p}^{+}+\frac{q\Delta t}{2}\mathbf{E}^n\]</div>
+  <h3><span data-lang="zh">位置更新</span><span data-lang="en">Position update</span><span data-lang="ja">位置の更新</span></h3>
+  <div class="eq result lang-all">\[\mathbf{x}^{n+1}=\mathbf{x}^n+\mathbf{v}^{n+1/2}\Delta t\]</div>
+
+  <button class="note-toggle" onclick="toggleNote('note-boris')" aria-expanded="false" aria-controls="note-boris">
+    <span class="note-toggle-icon">＋</span>
+    <span data-lang="zh">补充笔记：为什么要"先半步再旋转再半步"？</span>
+    <span data-lang="en">Note: Why "half-step, rotate, half-step"?</span>
+    <span data-lang="ja">補足：なぜ「半ステップ→回転→半ステップ」なのか？</span>
+  </button>
+  <div class="note-panel" id="note-boris" hidden>
+    <div class="note-panel-header">
+      <span class="note-panel-title"><span data-lang="zh">补充笔记</span><span data-lang="en">Note</span><span data-lang="ja">補足</span></span>
+      <button class="note-close" onclick="toggleNote('note-boris')">✕</button>
+    </div>
+    <div class="note-panel-body">
+      <p><span data-lang="zh">电场项改变能量，磁场项只改变方向。Boris 算法把两者分开：先半步电场加速→精确磁场旋转→再半步电场加速，长时间模拟中严格保持动能守恒。</span><span data-lang="en">The electric term changes energy; the magnetic term only changes direction. Boris separates them: half electric push → exact magnetic rotation → half electric push. This strictly conserves kinetic energy over long simulations.</span><span data-lang="ja">電場項はエネルギーを変え、磁場項は方向だけを変えます。Boris 法はこの二つを分離します：電場の半ステップ加速 → 正確な磁場回転 → 電場の半ステップ加速。これにより長時間シミュレーションで運動エネルギーが厳密に保存されます。</span></p>
+    </div>
+  </div>
+
+  <div class="interactive" id="boris-demo">
+    <p class="interactive-label">
+      <span data-lang="zh">Boris 推进演示 · 纯磁场下的回旋运动</span>
+      <span data-lang="en">Boris Pusher Demo · Gyration in Pure Magnetic Field</span>
+      <span data-lang="ja">Boris 法デモ · 純磁場中の旋回運動</span>
+    </p>
+    <div class="slider-row lang-all">
+      <label>Δt</label>
+      <input type="range" id="boris-dt" min="0.05" max="1.2" step="0.01" value="0.3">
+      <code id="boris-dt-out">Δt = 0.30</code>
+    </div>
+    <div class="canvas-wrap lang-all"><canvas id="boriscanvas"></canvas></div>
+    <div class="canvas-legend lang-all">
+      <span><span class="legend-dot" style="background:#999"></span><span data-lang="zh">理论圆</span><span data-lang="en">Theory</span><span data-lang="ja">理論円</span></span>
+      <span><span class="legend-dot" style="background:#3a56d4"></span>Boris</span>
+      <span><span class="legend-dot" style="background:#c0392b"></span><span data-lang="zh">前向欧拉</span><span data-lang="en">Fwd Euler</span><span data-lang="ja">前進オイラー</span></span>
+    </div>
+    <div class="result-grid lang-all" style="margin-top:1rem" id="boris-energy"></div>
+  </div>
+</section>
+
+<!-- 1c -->
+<section id="interp-to-grid">
+  <h3 class="subsection-title">
+    <span data-lang="zh">1c. 粒子到网格的插值</span>
+    <span data-lang="en">1c. Particle-to-Grid Interpolation</span>
+    <span data-lang="ja">1c. 粒子からグリッドへの補間</span>
+  </h3>
+  <div class="eq key lang-all">
+    \[\rho_g=\sum_p\frac{q_p}{\Delta V}W(\mathbf{x}_p-\mathbf{x}_g)\qquad\mathbf{J}_g=\sum_p\frac{q_p\mathbf{v}_p}{\Delta V}W(\mathbf{x}_p-\mathbf{x}_g)\]
+  </div>
+  <div class="callout">
+    <span data-lang="zh">1a 和 1c 是一对互逆操作，使用<strong>相同的形状函数 \(W\)</strong> 是保证整体能量、动量守恒的关键设计。</span>
+    <span data-lang="en">Steps 1a and 1c are inverse operations. Using the <strong>same shape function \(W\)</strong> in both is key to ensuring global energy and momentum conservation.</span>
+    <span data-lang="ja">ステップ 1a と 1c は逆演算のペアです。<strong>同じ形状関数 \(W\)</strong> を使用することが、エネルギーと運動量の全体的な保存を保証するための重要な設計です。</span>
+  </div>
+</section>
+
+<!-- 1d -->
+<section id="fieldsolve">
+  <h3 class="subsection-title">
+    <span data-lang="zh">1d. 场求解（FDTD）</span>
+    <span data-lang="en">1d. Field Solve — FDTD</span>
+    <span data-lang="ja">1d. 場の計算（FDTD）</span>
+  </h3>
+  <div class="eq key lang-all">\[\mathbf{B}^{n+1/2}=\mathbf{B}^{n-1/2}-\Delta t\,\nabla\times\mathbf{E}^n\]</div>
+  <div class="eq result lang-all">\[\mathbf{E}^{n+1}=\mathbf{E}^n+\Delta t\!\left(c^2\nabla\times\mathbf{B}^{n+1/2}-\frac{\mathbf{J}^{n+1/2}}{\varepsilon_0}\right)\]</div>
+
+  <button class="note-toggle" onclick="toggleNote('note-yee')" aria-expanded="false" aria-controls="note-yee">
+    <span class="note-toggle-icon">＋</span>
+    <span data-lang="zh">补充笔记：什么是 Yee 网格？</span>
+    <span data-lang="en">Note: What is the Yee grid?</span>
+    <span data-lang="ja">補足：Yee グリッドとは？</span>
+  </button>
+  <div class="note-panel" id="note-yee" hidden>
+    <div class="note-panel-header">
+      <span class="note-panel-title"><span data-lang="zh">补充笔记</span><span data-lang="en">Note</span><span data-lang="ja">補足</span></span>
+      <button class="note-close" onclick="toggleNote('note-yee')">✕</button>
+    </div>
+    <div class="note-panel-body">
+      <p><span data-lang="zh">Yee 网格将电场和磁场定义在空间上错开半格、时间上错开半步的位置，使旋度运算的离散精度达到二阶，电场磁场如"蛙跳"般交替前进。</span><span data-lang="en">The Yee grid places electric and magnetic field components staggered by half a cell in space and half a step in time, achieving second-order accuracy for the curl operators. Electric and magnetic fields leapfrog each other.</span><span data-lang="ja">Yee グリッドは電場と磁場を空間的に半セル、時間的に半ステップずらした位置に配置し、回転演算の離散精度を 2 次に高めます。電場と磁場は交互に更新されます（蛙跳び格式）。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- CFL -->
+<section id="cfl">
+  <h3 class="subsection-title">
+    <span data-lang="zh">CFL 稳定性条件</span>
+    <span data-lang="en">CFL Stability Condition</span>
+    <span data-lang="ja">CFL 安定性条件</span>
+  </h3>
+  <div class="eq result lang-all">\[\Delta t<\frac{\Delta x}{c}\]</div>
+  <p>
+    <span data-lang="zh">直觉上，这个条件要求<strong>光速波动在一个时间步内传播的距离不能超过一个网格单元</strong>。</span>
+    <span data-lang="en">Intuitively, this requires that <strong>a light-speed wave cannot travel more than one grid cell per time step</strong>.</span>
+    <span data-lang="ja">直感的には、<strong>光速の波動が 1 タイムステップで 1 グリッドセル以上進んではならない</strong>という条件です。</span>
+  </p>
+  <div class="interactive" id="cfl-calc">
+    <p class="interactive-label">
+      <span data-lang="zh">CFL 计算器</span>
+      <span data-lang="en">CFL Calculator</span>
+      <span data-lang="ja">CFL 計算機</span>
+    </p>
+    <div class="param-grid lang-all">
+      <div class="param-item"><label>Δx (m)</label><input type="number" id="c_dx" value="1e-6" step="1e-7"></div>
+      <div class="param-item"><label><span data-lang="zh">维度</span><span data-lang="en">Dimension</span><span data-lang="ja">次元</span></label><input type="number" id="c_dim" value="1" step="1" min="1" max="3"></div>
+      <div class="param-item"><label>Δt (s)</label><input type="number" id="c_dt" value="2e-15" step="1e-16"></div>
+    </div>
+    <div class="result-grid lang-all" id="cfl-out"></div>
+  </div>
+</section>
+
+<!-- Summary -->
+<section id="summary">
+  <h3 class="subsection-title">
+    <span data-lang="zh">整体循环总结</span>
+    <span data-lang="en">Full Loop Summary</span>
+    <span data-lang="ja">全体ループのまとめ</span>
+  </h3>
+  <div class="eq result lang-all">
+    \[\mathbf{E}_g,\mathbf{B}_g\xrightarrow{\text{interp}}\mathbf{E}_p,\mathbf{B}_p\xrightarrow{\text{Boris}}\mathbf{x}_p,\mathbf{v}_p\xrightarrow{\text{interp}}\rho_g,\mathbf{J}_g\xrightarrow{\text{FDTD}}\mathbf{E}_g^{n+1},\mathbf{B}_g^{n+1}\]
+  </div>
+</section>
+
+<!-- ══ 2. CPU vs GPU ══ -->
+<section id="cpu-gpu">
+  <h2>
+    <span data-lang="zh">2. CPU 与 GPU 的区别</span>
+    <span data-lang="en">2. CPU vs GPU</span>
+    <span data-lang="ja">2. CPU と GPU の違い</span>
+  </h2>
+
+  <h3 class="subsection-title" id="cpu-gpu-same">
+    <span data-lang="zh">相同点</span>
+    <span data-lang="en">Similarities</span>
+    <span data-lang="ja">共通点</span>
+  </h3>
+  <p>
+    <span data-lang="zh">GPU 和 CPU 本质上都是<strong>通用的数字电路处理器</strong>，都遵循冯·诺依曼架构：从内存读取指令和数据，执行运算，把结果写回内存。它们都包含 ALU、缓存，都可用 C/C++ 编程。</span>
+    <span data-lang="en">Both GPUs and CPUs are fundamentally <strong>general-purpose digital processors</strong> following the von Neumann architecture: fetch instructions and data from memory, execute computations, and write results back. Both contain ALUs, caches, and can be programmed in C/C++.</span>
+    <span data-lang="ja">GPU と CPU はどちらも根本的には<strong>汎用デジタルプロセッサ</strong>であり、フォン・ノイマンアーキテクチャに従います：メモリから命令とデータを取得し、演算を実行し、結果をメモリに書き戻します。どちらも ALU とキャッシュを持ち、C/C++ でプログラム可能です。</span>
+  </p>
+
+  <h3 class="subsection-title" id="cpu-gpu-diff">
+    <span data-lang="zh">设计哲学差异</span>
+    <span data-lang="en">Design Philosophy</span>
+    <span data-lang="ja">設計思想の違い</span>
+  </h3>
+
+  <div class="compare-grid lang-all">
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon cpu">CPU</div>
+        <div>
+          <div class="compare-card-title">CPU</div>
+          <div class="compare-card-sub"><span data-lang="zh">少量强核心 · 串行优先</span><span data-lang="en">Few powerful cores · Serial-first</span><span data-lang="ja">少数の高性能コア · シリアル優先</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><strong><span data-lang="zh">几个到几十个</span><span data-lang="en">A few to dozens</span><span data-lang="ja">数個〜数十個</span></strong><span data-lang="zh">核心</span><span data-lang="en">cores</span><span data-lang="ja">のコア</span></li>
+        <li><span data-lang="zh">复杂控制逻辑、分支预测、乱序执行</span><span data-lang="en">Complex control logic, branch prediction, out-of-order execution</span><span data-lang="ja">複雑な制御ロジック、分岐予測、アウトオブオーダー実行</span></li>
+        <li><span data-lang="zh">大容量缓存</span><span data-lang="en">Large caches</span><span data-lang="ja">大容量キャッシュ</span></li>
+        <li><span data-lang="zh">擅长逻辑复杂、依赖关系强的串行任务</span><span data-lang="en">Excels at complex, dependency-heavy serial tasks</span><span data-lang="ja">複雑な依存関係を持つシリアルタスクが得意</span></li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon gpu">GPU</div>
+        <div>
+          <div class="compare-card-title">GPU</div>
+          <div class="compare-card-sub"><span data-lang="zh">海量简单核心 · 并行优先</span><span data-lang="en">Thousands of simple cores · Parallel-first</span><span data-lang="ja">大量の単純コア · 並列優先</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><strong><span data-lang="zh">成百上千个</span><span data-lang="en">Hundreds to thousands</span><span data-lang="ja">数百〜数千個</span></strong><span data-lang="zh">相对简单的核心</span><span data-lang="en">of relatively simple cores</span><span data-lang="ja">の比較的単純なコア</span></li>
+        <li><span data-lang="zh">擅长"同一运算同时施加在大量独立数据上"（SIMD）</span><span data-lang="en">Excels at "same operation applied to many independent data elements simultaneously" (SIMD)</span><span data-lang="ja">"同じ演算を大量の独立したデータに同時適用"（SIMD）が得意</span></li>
+        <li><span data-lang="zh">图形渲染、深度学习矩阵乘法</span><span data-lang="en">Graphics rendering, deep learning matrix ops</span><span data-lang="ja">グラフィックレンダリング、深層学習の行列演算</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="subsection-title" id="cpu-gpu-context">
+    <span data-lang="zh">与 PIC / GNN 的关系</span>
+    <span data-lang="en">Relation to PIC / GNN</span>
+    <span data-lang="ja">PIC / GNN との関係</span>
+  </h3>
+  <div class="callout">
+    <span data-lang="zh"><strong>EPOCH</strong>（PIC 代码）用 Fortran 编写，运行在 <strong>CPU</strong> 上——算法步骤有严格顺序依赖。<br><br><strong>GNS</strong>（图神经网络）本质上是大量矩阵乘法和消息传递，天然适合 <strong>GPU</strong>（论文使用 Nvidia V100 / A100）加速。</span>
+    <span data-lang="en"><strong>EPOCH</strong> (PIC code) is written in Fortran and runs on <strong>CPU</strong> — its algorithmic steps have strict sequential dependencies.<br><br><strong>GNS</strong> (graph neural network) is essentially large-scale matrix multiplications and message passing, naturally suited for <strong>GPU</strong> acceleration (Nvidia V100 / A100 in this paper).</span>
+    <span data-lang="ja"><strong>EPOCH</strong>（PIC コード）は Fortran で記述され、<strong>CPU</strong> 上で動作します。アルゴリズムのステップには厳格な順序依存関係があります。<br><br><strong>GNS</strong>（グラフニューラルネットワーク）は本質的に大規模な行列積とメッセージパッシングであり、<strong>GPU</strong>（本論文では Nvidia V100 / A100）による加速に適しています。</span>
+  </div>
+</section>
+
+<!-- ══ 3. Hyperparameters ══ -->
+<section id="hyperparam">
+  <h2>
+    <span data-lang="zh">3. 超参数优化</span>
+    <span data-lang="en">3. Hyperparameter Optimization</span>
+    <span data-lang="ja">3. ハイパーパラメータ最適化</span>
+  </h2>
+  <p>
+    <span data-lang="zh">论文使用异步连续减半（ASHA）和树形结构 Parzen 估计器（TPE）进行系统性超参数搜索（附录 B）。</span>
+    <span data-lang="en">The paper uses Asynchronous Successive Halving (ASHA) and Tree-structured Parzen Estimator (TPE) for systematic hyperparameter search (Appendix B).</span>
+    <span data-lang="ja">論文では、非同期連続二分法（ASHA）と木構造 Parzen 推定量（TPE）を用いて系統的なハイパーパラメータ探索を実施しています（付録 B）。</span>
+  </p>
+
+  <h3 class="subsection-title" id="hyperparam-def">
+    <span data-lang="zh">什么是超参数</span>
+    <span data-lang="en">What is a Hyperparameter?</span>
+    <span data-lang="ja">ハイパーパラメータとは</span>
+  </h3>
+  <p>
+    <span data-lang="zh">超参数是指<strong>在模型训练开始之前就需要人为设定、而不是通过训练数据自动学习得到的参数</strong>。</span>
+    <span data-lang="en">A hyperparameter is a parameter that must be <strong>set by a human before training begins</strong>, rather than being learned automatically from training data.</span>
+    <span data-lang="ja">ハイパーパラメータとは、学習データから自動的に学習されるのではなく、<strong>学習開始前に人間が設定しなければならないパラメータ</strong>のことです。</span>
+  </p>
+  <div class="callout">
+    <span data-lang="zh">超参数控制<strong>训练过程本身</strong>，而非模型从数据中学到的内容。选错超参数，再好的数据也可能训练失败。</span>
+    <span data-lang="en">Hyperparameters govern the <strong>training process itself</strong>, not what the model learns from the data. Wrong hyperparameters can cause training to fail even with excellent data.</span>
+    <span data-lang="ja">ハイパーパラメータは<strong>学習プロセス自体</strong>を制御するものであり、モデルがデータから学ぶ内容ではありません。不適切なハイパーパラメータは、優れたデータがあっても学習の失敗を招く可能性があります。</span>
+  </div>
+
+  <h3 class="subsection-title" id="hyperparam-vs-param">
+    <span data-lang="zh">与普通参数的对比</span>
+    <span data-lang="en">Hyperparameters vs. Regular Parameters</span>
+    <span data-lang="ja">通常パラメータとの比較</span>
+  </h3>
+
+  <div class="compare-grid lang-all">
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon cpu">θ</div>
+        <div>
+          <div class="compare-card-title"><span data-lang="zh">普通参数</span><span data-lang="en">Regular Parameters</span><span data-lang="ja">通常パラメータ</span></div>
+          <div class="compare-card-sub"><span data-lang="zh">训练中自动学习</span><span data-lang="en">Learned automatically during training</span><span data-lang="ja">学習中に自動的に学習</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><span data-lang="zh"><strong>权重</strong>（weights）、<strong>偏置</strong>（biases）</span><span data-lang="en"><strong>Weights</strong> and <strong>biases</strong></span><span data-lang="ja"><strong>重み</strong>（weights）・<strong>バイアス</strong>（biases）</span></li>
+        <li><span data-lang="zh">通过反向传播 + 梯度下降自动更新</span><span data-lang="en">Updated automatically via backpropagation + gradient descent</span><span data-lang="ja">誤差逆伝播 + 勾配降下法で自動更新</span></li>
+        <li><span data-lang="zh">数量通常非常庞大（百万乃至数十亿）</span><span data-lang="en">Usually enormous in number (millions to billions)</span><span data-lang="ja">通常は非常に多い（数百万〜数十億）</span></li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <div class="compare-card-head">
+        <div class="compare-icon gpu">λ</div>
+        <div>
+          <div class="compare-card-title"><span data-lang="zh">超参数</span><span data-lang="en">Hyperparameters</span><span data-lang="ja">ハイパーパラメータ</span></div>
+          <div class="compare-card-sub"><span data-lang="zh">训练前人为设定</span><span data-lang="en">Set by humans before training</span><span data-lang="ja">学習前に人間が設定</span></div>
+        </div>
+      </div>
+      <ul>
+        <li><span data-lang="zh">学习率、批大小、训练轮数</span><span data-lang="en">Learning rate, batch size, epochs</span><span data-lang="ja">学習率、バッチサイズ、エポック数</span></li>
+        <li><span data-lang="zh">网络层数、每层神经元数</span><span data-lang="en">Number of layers, neurons per layer</span><span data-lang="ja">層数、各層のニューロン数</span></li>
+        <li><span data-lang="zh">训练过程<strong>不会改变</strong>它们</span><span data-lang="en"><strong>Not changed</strong> by the training process</span><span data-lang="ja">学習プロセスでは<strong>変更されない</strong></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <button class="note-toggle" onclick="toggleNote('note-hyperparam-analogy')" aria-expanded="false" aria-controls="note-hyperparam-analogy">
+    <span class="note-toggle-icon">＋</span>
+    <span data-lang="zh">补充笔记：用烤蛋糕来理解</span>
+    <span data-lang="en">Note: The baking analogy</span>
+    <span data-lang="ja">補足：ケーキ焼きのたとえ</span>
+  </button>
+  <div class="note-panel" id="note-hyperparam-analogy" hidden>
+    <div class="note-panel-header">
+      <span class="note-panel-title"><span data-lang="zh">补充笔记</span><span data-lang="en">Note</span><span data-lang="ja">補足</span></span>
+      <button class="note-close" onclick="toggleNote('note-hyperparam-analogy')">✕</button>
+    </div>
+    <div class="note-panel-body">
+      <p><span data-lang="zh"><strong>普通参数</strong> = 蛋糕在烤制过程中自动定型的内部结构。<strong>超参数</strong> = 烤箱温度、烘烤时间——必须在开始前由人设定。设错了，再好的原料也烤不出好蛋糕。论文花了 <strong>10 周、200 次试验</strong>来找到最优组合。</span><span data-lang="en"><strong>Regular parameters</strong> = the internal structure of the cake that forms automatically during baking. <strong>Hyperparameters</strong> = oven temperature, baking time — set by the baker before starting. Get them wrong, and even great ingredients produce a bad cake. This paper spent <strong>10 weeks and 200 trials</strong> finding the best combination.</span><span data-lang="ja"><strong>通常パラメータ</strong> = ケーキが焼かれる過程で自動的に形成される内部構造。<strong>ハイパーパラメータ</strong> = オーブンの温度・焼き時間 — 開始前に人間が設定する必要があります。間違えると、どんなに良い材料でも美味しいケーキは焼けません。この論文では最適な組み合わせを見つけるために<strong>10 週間・200 回の試行</strong>を要しました。</span></p>
+    </div>
+  </div>
+
+  <h3 class="subsection-title" id="hyperparam-examples">
+    <span data-lang="zh">论文中的具体超参数</span>
+    <span data-lang="en">Hyperparameters in This Paper</span>
+    <span data-lang="ja">論文中の具体的なハイパーパラメータ</span>
+  </h3>
+
+  <table class="lang-all">
+    <thead>
+      <tr>
+        <th><span data-lang="zh">超参数</span><span data-lang="en">Hyperparameter</span><span data-lang="ja">ハイパーパラメータ</span></th>
+        <th><span data-lang="zh">含义</span><span data-lang="en">Meaning</span><span data-lang="ja">意味</span></th>
+        <th><span data-lang="zh">最优值（Model C）</span><span data-lang="en">Optimal (Model C)</span><span data-lang="ja">最適値（Model C）</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>\(\eta_0\)</td><td><span data-lang="zh">初始学习率</span><span data-lang="en">Initial learning rate</span><span data-lang="ja">初期学習率</span></td><td>\(9.71\times10^{-4}\)</td></tr>
+      <tr><td>\(d\)</td><td><span data-lang="zh">学习率衰减因子</span><span data-lang="en">LR decay factor</span><span data-lang="ja">学習率減衰係数</span></td><td>\(4.4\times10^{-3}\)</td></tr>
+      <tr><td>\(r\)</td><td><span data-lang="zh">衰减频率（步数）</span><span data-lang="en">Decay rate (steps)</span><span data-lang="ja">減衰頻度（ステップ）</span></td><td>\(7.69\times10^5\)</td></tr>
+      <tr><td><span data-lang="zh">消息传递步数</span><span data-lang="en">Message-passing steps</span><span data-lang="ja">メッセージパスのステップ数</span></td><td><span data-lang="zh">GNN 中消息传递轮数</span><span data-lang="en">Rounds of message passing in GNN</span><span data-lang="ja">GNN 内のメッセージパス回数</span></td><td>11</td></tr>
+      <tr><td><span data-lang="zh">输入序列长度</span><span data-lang="en">Input sequence length</span><span data-lang="ja">入力シーケンス長</span></td><td><span data-lang="zh">历史快照数</span><span data-lang="en">Number of history snapshots</span><span data-lang="ja">過去スナップショット数</span></td><td>8</td></tr>
+      <tr><td><span data-lang="zh">连接半径</span><span data-lang="en">Connectivity radius</span><span data-lang="ja">接続半径</span></td><td><span data-lang="zh">节点连边距离阈值</span><span data-lang="en">Distance threshold for edges</span><span data-lang="ja">エッジ接続距離閾値</span></td><td>2.5 km</td></tr>
+      <tr><td><span data-lang="zh">隐藏层数</span><span data-lang="en">Hidden layers (MLP)</span><span data-lang="ja">隠れ層数（MLP）</span></td><td><span data-lang="zh">MLP 的层深</span><span data-lang="en">Depth of MLP</span><span data-lang="ja">MLP の層の深さ</span></td><td>1</td></tr>
+      <tr><td><span data-lang="zh">隐层特征维度</span><span data-lang="en">Latent features</span><span data-lang="ja">潜在特徴次元</span></td><td><span data-lang="zh">每层神经元数</span><span data-lang="en">Neurons per layer</span><span data-lang="ja">各層のニューロン数</span></td><td>185 / 209</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:.9rem">
+    <span data-lang="zh">值得注意的是，<strong>未观察到任何单一超参数与最终性能之间存在显著相关性</strong>——说明超参数之间存在复杂的相互作用，不能孤立地只调某一个。</span>
+    <span data-lang="en">Notably, <strong>no significant correlation was observed between any single hyperparameter and final performance</strong> — indicating complex interactions between hyperparameters that cannot be optimised in isolation.</span>
+    <span data-lang="ja">注目すべきは、<strong>単一のハイパーパラメータと最終性能の間に有意な相関は観察されなかった</strong>ことです。これはハイパーパラメータ間の複雑な相互作用を示しており、個別に最適化することはできません。</span>
+  </p>
+</section>
+
+<!-- ══ 4. GNS 神经网络结构 ══ -->
+<section id="gns-arch">
+  <h2>
+    <span data-lang="zh">4. GNS 神经网络示意图</span>
+    <span data-lang="en">4. GNS Neural Network Architecture</span>
+    <span data-lang="ja">4. GNS ニューラルネットワーク構造図</span>
+  </h2>
+  <p>
+    <span data-lang="zh">论文中的图神经网络模拟器（Graph Network Simulator，GNS）采用经典的<strong>编码器—处理器—解码器</strong>（Encode-Process-Decode）结构。整个网络接收粒子和电场格点的历史状态作为输入，经过多轮消息传递学习粒子之间的相互作用，最终输出每个粒子的加速度和每个格点的电场预测值，从而推进模拟向前一个时间步。</span>
+    <span data-lang="en">The Graph Network Simulator (GNS) in this paper uses the classic <strong>Encode-Process-Decode</strong> architecture. The network takes the historical states of particles and electric field grid points as input, learns particle interactions through multiple rounds of message passing, and outputs predicted accelerations for each particle and electric field values for each grid point — advancing the simulation by one time step.</span>
+    <span data-lang="ja">本論文のグラフネットワークシミュレータ（GNS）は、古典的な<strong>エンコード—プロセス—デコード</strong>アーキテクチャを採用しています。ネットワークは粒子と電場グリッド点の過去の状態を入力として受け取り、複数回のメッセージパッシングを通じて粒子間の相互作用を学習し、各粒子の加速度と各グリッド点の電場値を予測として出力し、シミュレーションを一タイムステップ進めます。</span>
+  </p>
+
+  <!-- ── 架构图（纯 HTML，支持三语 CSS 切换）── -->
+  <div id="gns-overview" style="font-size:13px;line-height:1.5">
+
+    <style>
+    .gns-diagram{display:flex;flex-direction:column;gap:12px}
+    .gns-section-label{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:4px}
+    .gns-section-box{border:.5px dashed var(--color-border-secondary);border-radius:8px;padding:10px 12px}
+    .gns-row{display:flex;gap:10px}
+    .gns-node{flex:1;border-radius:8px;padding:10px 10px 8px;display:flex;flex-direction:column;gap:3px}
+    .gns-node-title{font-size:13px;font-weight:500}
+    .gns-node-sub{font-size:11px;opacity:.85}
+    .gns-node.teal{background:var(--color-background-info);border:.5px solid #5DCAA5}
+    .gns-node.teal .gns-node-title{color:#085041}
+    .gns-node.teal .gns-node-sub{color:#0F6E56}
+    .gns-node.purple{background:#EEEDFE;border:.5px solid #AFA9EC}
+    .gns-node.purple .gns-node-title{color:#26215C}
+    .gns-node.purple .gns-node-sub{color:#3C3489}
+    .gns-node.gray{background:var(--color-background-secondary);border:.5px solid var(--color-border-secondary)}
+    .gns-node.gray .gns-node-title{color:var(--color-text-primary)}
+    .gns-node.gray .gns-node-sub{color:var(--color-text-secondary)}
+    .gns-node.amber{background:#FAEEDA;border:.5px solid #EF9F27}
+    .gns-node.amber .gns-node-title{color:#412402}
+    .gns-node.amber .gns-node-sub{color:#633806}
+    .gns-node.blue{background:#E6F1FB;border:.5px solid #85B7EB}
+    .gns-node.blue .gns-node-title{color:#042C53}
+    .gns-node.blue .gns-node-sub{color:#0C447C}
+    .gns-node.coral{background:#FAECE7;border:.5px solid #F0997B}
+    .gns-node.coral .gns-node-title{color:#4A1B0C}
+    .gns-node.coral .gns-node-sub{color:#712B13}
+    @media(prefers-color-scheme:dark){
+      .gns-node.teal{background:#04342C;border-color:#1D9E75}
+      .gns-node.teal .gns-node-title{color:#9FE1CB}
+      .gns-node.teal .gns-node-sub{color:#5DCAA5}
+      .gns-node.purple{background:#26215C;border-color:#7F77DD}
+      .gns-node.purple .gns-node-title{color:#CECBF6}
+      .gns-node.purple .gns-node-sub{color:#AFA9EC}
+      .gns-node.amber{background:#412402;border-color:#BA7517}
+      .gns-node.amber .gns-node-title{color:#FAC775}
+      .gns-node.amber .gns-node-sub{color:#EF9F27}
+      .gns-node.blue{background:#042C53;border-color:#378ADD}
+      .gns-node.blue .gns-node-title{color:#B5D4F4}
+      .gns-node.blue .gns-node-sub{color:#85B7EB}
+      .gns-node.coral{background:#4A1B0C;border-color:#D85A30}
+      .gns-node.coral .gns-node-title{color:#F5C4B3}
+      .gns-node.coral .gns-node-sub{color:#F0997B}
+    }
+    .gns-arrow{text-align:center;color:var(--color-text-tertiary);font-size:16px;line-height:1.2;margin:2px 0}
+    .gns-arrow-row{display:flex;justify-content:space-around;color:var(--color-text-tertiary);font-size:16px;line-height:1.2;margin:2px 0}
+    .gns-msg-row{display:flex;align-items:center;gap:8px;padding:12px 0 4px}
+    .gns-msg-node{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+    .gns-msg-node.teal{background:#9FE1CB;color:#04342C;border:.5px solid #1D9E75}
+    .gns-msg-node.purple{background:#CECBF6;color:#26215C;border:.5px solid #7F77DD}
+    @media(prefers-color-scheme:dark){
+      .gns-msg-node.teal{background:#085041;color:#9FE1CB}
+      .gns-msg-node.purple{background:#26215C;color:#CECBF6}
+    }
+    .gns-msg-line{flex:1;display:flex;flex-direction:column;gap:4px;align-items:center;font-size:11px;color:var(--color-text-tertiary)}
+    .gns-msg-line hr{width:100%;border:none;border-top:.5px solid #378ADD;margin:0}
+    .gns-corr-box{border:.5px dashed var(--color-border-secondary);border-radius:6px;padding:8px 12px;margin-top:8px;display:flex;flex-direction:column;gap:3px}
+    .gns-corr-item{font-size:11px;color:var(--color-text-tertiary)}
+    .gns-output-row{display:flex;gap:10px}
+    .gns-out-box{flex:1;border-radius:8px;padding:8px 10px}
+    .gns-out-box.teal{background:#E1F5EE;border:.5px solid #1D9E75}
+    .gns-out-box.teal .gns-node-title{color:#085041}
+    .gns-out-box.teal .gns-node-sub{color:#0F6E56}
+    .gns-out-box.purple{background:#EEEDFE;border:.5px solid #7F77DD}
+    .gns-out-box.purple .gns-node-title{color:#26215C}
+    .gns-out-box.purple .gns-node-sub{color:#3C3489}
+    @media(prefers-color-scheme:dark){
+      .gns-out-box.teal{background:#04342C;border-color:#1D9E75}
+      .gns-out-box.teal .gns-node-title{color:#9FE1CB}
+      .gns-out-box.teal .gns-node-sub{color:#5DCAA5}
+      .gns-out-box.purple{background:#26215C;border-color:#7F77DD}
+      .gns-out-box.purple .gns-node-title{color:#CECBF6}
+      .gns-out-box.purple .gns-node-sub{color:#AFA9EC}
+    }
+    </style>
+
+    <div class="gns-diagram">
+
+      <!-- ① 输入 -->
+      <div class="gns-section-box">
+        <div class="gns-section-label">
+          <span data-lang="zh">① 输入特征</span>
+          <span data-lang="en">① Input features</span>
+          <span data-lang="ja">① 入力特徴量</span>
+        </div>
+        <div class="gns-row">
+          <div class="gns-node teal">
+            <div class="gns-node-title"><span data-lang="zh">粒子节点</span><span data-lang="en">Particle node</span><span data-lang="ja">粒子ノード</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">8 步历史速度</span><span data-lang="en">8-step velocity history</span><span data-lang="ja">8ステップ速度履歴</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">+ 电场分量 + 粒子权重</span><span data-lang="en">+ E-field + particle weight</span><span data-lang="ja">+ 電場成分 + 粒子重み</span></div>
+          </div>
+          <div class="gns-node purple">
+            <div class="gns-node-title"><span data-lang="zh">场节点（电场格点）</span><span data-lang="en">Field node (grid point)</span><span data-lang="ja">場ノード（グリッド点）</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">8 步历史电场值</span><span data-lang="en">8-step E-field history</span><span data-lang="ja">8ステップ電場履歴</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">+ 节点类型标记 = 0</span><span data-lang="en">+ node type flag = 0</span><span data-lang="ja">+ ノードタイプ = 0</span></div>
+          </div>
+          <div class="gns-node gray">
+            <div class="gns-node-title"><span data-lang="zh">边</span><span data-lang="en">Edge</span><span data-lang="ja">エッジ</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">节点间相对位移</span><span data-lang="en">Relative displacement</span><span data-lang="ja">ノード間相対変位</span></div>
+            <div class="gns-node-sub"><span data-lang="zh">连接半径 2.5 km 内</span><span data-lang="en">within 2.5 km radius</span><span data-lang="ja">接続半径 2.5 km 以内</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gns-arrow">↓</div>
+
+      <!-- ② 编码器 -->
+      <div class="gns-section-box">
+        <div class="gns-section-label">
+          <span data-lang="zh">② 编码器（Encoder）</span>
+          <span data-lang="en">② Encoder</span>
+          <span data-lang="ja">② エンコーダ</span>
+        </div>
+        <div class="gns-node amber" style="flex:unset">
+          <div class="gns-node-title"><span data-lang="zh">MLP（1 层隐层，185 神经元）→ 潜在向量 209 维</span><span data-lang="en">MLP (1 hidden layer, 185 neurons) → 209-dim latent vector</span><span data-lang="ja">MLP（隠れ層 1 層，185 ニューロン）→ 209 次元潜在ベクトル</span></div>
+        </div>
+      </div>
+
+      <div class="gns-arrow">↓</div>
+
+      <!-- ③ 处理器 -->
+      <div class="gns-section-box">
+        <div class="gns-section-label">
+          <span data-lang="zh">③ 处理器（Processor）— 11 轮消息传递</span>
+          <span data-lang="en">③ Processor — 11 rounds of message passing</span>
+          <span data-lang="ja">③ プロセッサ — メッセージパッシング 11 ラウンド</span>
+        </div>
+        <div class="gns-node blue" style="flex:unset">
+          <div class="gns-node-title"><span data-lang="zh">每轮：φ_m（MLP）→ 聚合消息 → F_m（MLP）→ 更新节点特征</span><span data-lang="en">Each round: φ_m (MLP) → aggregate messages → F_m (MLP) → update features</span><span data-lang="ja">各ラウンド：φ_m（MLP）→ メッセージ集約 → F_m（MLP）→ ノード特徴更新</span></div>
+          <div class="gns-node-sub"><span data-lang="zh">每轮结束后做层归一化（Layer Norm）｜每轮权重独立</span><span data-lang="en">Layer Norm after each round | independent weights per round</span><span data-lang="ja">各ラウンド後に層正規化（Layer Norm）｜ラウンドごとに独立した重み</span></div>
+        </div>
+
+        <!-- 单轮示意 -->
+        <div style="margin-top:10px;border:.5px dashed var(--color-border-secondary);border-radius:6px;padding:10px 12px">
+          <div class="gns-section-label" style="margin-bottom:6px">
+            <span data-lang="zh">单轮消息传递示意</span>
+            <span data-lang="en">Single-round message passing</span>
+            <span data-lang="ja">1ラウンドのメッセージパッシング図解</span>
+          </div>
+          <div class="gns-msg-row">
+            <div class="gns-msg-node teal"><span data-lang="zh">粒子 i</span><span data-lang="en">P. i</span><span data-lang="ja">粒子 i</span></div>
+            <div class="gns-msg-line">
+              <span><span data-lang="zh">消息</span><span data-lang="en">msg</span><span data-lang="ja">メッセージ</span></span>
+              <div style="width:100%;display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;align-items:center;gap:4px"><div style="flex:1;height:.5px;background:#378ADD"></div><span style="color:#378ADD;font-size:12px">▶</span></div>
+                <div style="display:flex;align-items:center;gap:4px"><span style="color:#378ADD;font-size:12px">◀</span><div style="flex:1;height:.5px;background:#378ADD"></div></div>
+              </div>
+            </div>
+            <div class="gns-msg-node purple"><span data-lang="zh">场 g</span><span data-lang="en">F. g</span><span data-lang="ja">場 g</span></div>
+            <div class="gns-msg-line">
+              <span><span data-lang="zh">消息</span><span data-lang="en">msg</span><span data-lang="ja">メッセージ</span></span>
+              <div style="width:100%;display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex;align-items:center;gap:4px"><div style="flex:1;height:.5px;background:#378ADD"></div><span style="color:#378ADD;font-size:12px">▶</span></div>
+                <div style="display:flex;align-items:center;gap:4px"><span style="color:#378ADD;font-size:12px">◀</span><div style="flex:1;height:.5px;background:#378ADD"></div></div>
+              </div>
+            </div>
+            <div class="gns-msg-node teal"><span data-lang="zh">粒子 j</span><span data-lang="en">P. j</span><span data-lang="ja">粒子 j</span></div>
+          </div>
+          <div class="gns-corr-box">
+            <div class="gns-corr-item"><span data-lang="zh">▸ 场节点 → 粒子节点  ≈  PIC「场插值到粒子」</span><span data-lang="en">▸ Field → Particle  ≈  PIC "field interpolation to particle"</span><span data-lang="ja">▸ 場→粒子  ≈  PIC「場から粒子への補間」</span></div>
+            <div class="gns-corr-item"><span data-lang="zh">▸ 粒子节点 → 场节点  ≈  PIC「电荷沉积到网格」</span><span data-lang="en">▸ Particle → Field  ≈  PIC "charge deposition to grid"</span><span data-lang="ja">▸ 粒子→場  ≈  PIC「電荷のグリッドへの堆積」</span></div>
+            <div class="gns-corr-item"><span data-lang="zh">▸ 场节点间传递  ≈  PIC「场求解（FDTD）」</span><span data-lang="en">▸ Field ↔ Field  ≈  PIC "field solve (FDTD)"</span><span data-lang="ja">▸ 場↔場  ≈  PIC「場の計算（FDTD）」</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gns-arrow">↓</div>
+
+      <!-- ④ 解码器 -->
+      <div class="gns-section-box">
+        <div class="gns-section-label">
+          <span data-lang="zh">④ 解码器（Decoder）</span>
+          <span data-lang="en">④ Decoder</span>
+          <span data-lang="ja">④ デコーダ</span>
+        </div>
+        <div class="gns-node coral" style="flex:unset">
+          <div class="gns-node-title"><span data-lang="zh">MLP（无隐层）→ 粒子节点输出加速度，场节点输出电场值</span><span data-lang="en">MLP (no hidden layer) → particle nodes output acceleration, field nodes output E-field</span><span data-lang="ja">MLP（隠れ層なし）→ 粒子：加速度，場：電場値を出力</span></div>
+        </div>
+      </div>
+
+      <div class="gns-arrow">↓</div>
+
+      <!-- ⑤ 输出 -->
+      <div class="gns-output-row">
+        <div class="gns-out-box teal">
+          <div class="gns-node-title"><span data-lang="zh">粒子加速度 → 位置更新</span><span data-lang="en">Acceleration → position update</span><span data-lang="ja">加速度 → 位置更新</span></div>
+          <div class="gns-node-sub"><span data-lang="zh">蛙跳格式（leapfrog）</span><span data-lang="en">leapfrog integration</span><span data-lang="ja">蛙跳び積分</span></div>
+        </div>
+        <div class="gns-out-box purple">
+          <div class="gns-node-title"><span data-lang="zh">电场预测值</span><span data-lang="en">Predicted E-field</span><span data-lang="ja">電場予測値</span></div>
+          <div class="gns-node-sub"><span data-lang="zh">作为下一步场节点输入</span><span data-lang="en">Input for next step's field node</span><span data-lang="ja">次ステップの場ノード入力</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- ── 各模块文字说明 ── -->
+  <h3 class="subsection-title" id="gns-overview">
+    <span data-lang="zh">总体结构：Encode-Process-Decode</span>
+    <span data-lang="en">Overall structure: Encode-Process-Decode</span>
+    <span data-lang="ja">全体構造：エンコード—プロセス—デコード</span>
+  </h3>
+  <p>
+    <span data-lang="zh">整个网络分为三段。<strong>编码器</strong>把原始物理量翻译成网络可处理的潜在语言；<strong>处理器</strong>用 11 轮消息传递让节点之间充分交换信息，学习物理相互作用；<strong>解码器</strong>把最终的潜在向量直接映射到物理预测量。</span>
+    <span data-lang="en">The network has three stages. The <strong>encoder</strong> translates raw physical quantities into the latent language the network operates in. The <strong>processor</strong> uses 11 rounds of message passing to let nodes exchange information and learn physical interactions. The <strong>decoder</strong> maps the final latent vectors directly to physical predictions.</span>
+    <span data-lang="ja">ネットワークは三段階に分かれています。<strong>エンコーダ</strong>は生の物理量をネットワークが処理できる潜在空間の表現に変換します。<strong>プロセッサ</strong>は 11 ラウンドのメッセージパッシングによってノード間の情報交換を行い、物理的な相互作用を学習します。<strong>デコーダ</strong>は最終的な潜在ベクトルを物理的な予測量に直接変換します。</span>
+  </p>
+
+  <div class="callout">
+    <span data-lang="zh">消息传递的过程和 PIC 循环高度对应：场节点→粒子节点 ≈ 场插值到粒子；粒子节点→场节点 ≈ 电荷沉积；场节点间传递 ≈ 场求解（FDTD）。但与 PIC 不同，GNN 可以并行更新所有节点，且不受 CFL 条件限制。</span>
+    <span data-lang="en">The message-passing process closely mirrors the PIC loop: field→particle ≈ field interpolation; particle→field ≈ charge deposition; field↔field ≈ field solve (FDTD). Unlike PIC, however, the GNN can update all nodes in parallel and is not bound by the CFL condition.</span>
+    <span data-lang="ja">メッセージパッシングのプロセスは PIC ループに高度に対応しています：場→粒子 ≈ 場の補間；粒子→場 ≈ 電荷堆積；場↔場 ≈ 場の計算（FDTD）。ただし PIC とは異なり、GNN はすべてのノードを並列に更新でき、CFL 条件に縛られません。</span>
+  </div>
+
+  <h3 class="subsection-title" id="gns-encoder">
+    <span data-lang="zh">编码器</span>
+    <span data-lang="en">Encoder</span>
+    <span data-lang="ja">エンコーダ</span>
+  </h3>
+  <p>
+    <span data-lang="zh">编码器是一个 MLP，对节点特征和边特征分别做嵌入，将其映射到 <strong>209 维潜在空间</strong>。隐藏层有 185 个神经元，只有 1 层（这是超参数搜索的结果，比原始默认的 2 层更优）。激活函数为 ReLU，输出端做层归一化（Layer Norm）。</span>
+    <span data-lang="en">The encoder is an MLP that embeds node and edge features separately, mapping them into a <strong>209-dimensional latent space</strong>. It has 185 neurons in one hidden layer (found via hyperparameter search to outperform the default 2-layer version). The activation function is ReLU; the output is layer-normalised.</span>
+    <span data-lang="ja">エンコーダはノード特徴量とエッジ特徴量をそれぞれ埋め込む MLP であり、<strong>209 次元の潜在空間</strong>にマッピングします。隠れ層は 185 ニューロンの 1 層構成です（ハイパーパラメータ探索の結果、デフォルトの 2 層よりも優れていることが判明）。活性化関数は ReLU であり、出力には層正規化（Layer Norm）が適用されます。</span>
+  </p>
+
+  <h3 class="subsection-title" id="gns-processor">
+    <span data-lang="zh">处理器（消息传递）</span>
+    <span data-lang="en">Processor — message passing</span>
+    <span data-lang="ja">プロセッサ — メッセージパッシング</span>
+  </h3>
+  <p>
+    <span data-lang="zh">处理器是网络的核心，执行 11 轮消息传递。每轮里，节点 \(i\) 的特征按如下公式更新：</span>
+    <span data-lang="en">The processor is the core of the network, performing 11 rounds of message passing. In each round, node \(i\)'s features are updated as:</span>
+    <span data-lang="ja">プロセッサはネットワークの核心であり、11 ラウンドのメッセージパッシングを実行します。各ラウンドで、ノード \(i\) の特徴量は次のように更新されます：</span>
+  </p>
+  <div class="eq key lang-all">
+    \[\mathbf{x}_{i,m} = \mathbf{x}_{i,m-1} + F_m\!\left(\mathbf{x}_{i,m-1},\sum_{j}\phi_m(\mathbf{x}_{i,m-1},\mathbf{x}_{j,m-1},\mathbf{e}_{ij})\right)\]
+  </div>
+  <p>
+    <span data-lang="zh">其中 \(\phi_m\) 是计算"消息"的 MLP，\(F_m\) 是用消息更新节点特征的 MLP，两者在每轮都有独立的权重。消息先在所有邻居上求和（聚合），再和节点自身特征一起输入 \(F_m\)。每轮结束后对输出做层归一化。注意这里有一个残差连接（\(+\,\mathbf{x}_{i,m-1}\)），有助于梯度传播。</span>
+    <span data-lang="en">Here \(\phi_m\) is the MLP that computes "messages", and \(F_m\) is the MLP that updates node features using those messages — both have independent weights in each round. Messages are first summed over all neighbours (aggregation), then fed together with the node's own features into \(F_m\). Layer normalisation is applied after each round. Note the residual connection (\(+\,\mathbf{x}_{i,m-1}\)), which aids gradient flow.</span>
+    <span data-lang="ja">ここで \(\phi_m\) は「メッセージ」を計算する MLP、\(F_m\) はそのメッセージを用いてノード特徴量を更新する MLP であり、どちらも各ラウンドで独立した重みを持ちます。メッセージはまずすべての隣接ノードにわたって合算（集約）され、その後ノード自身の特徴量とともに \(F_m\) に入力されます。各ラウンド後に層正規化が適用されます。残差接続（\(+\,\mathbf{x}_{i,m-1}\)）により勾配の伝播が改善されます。</span>
+  </p>
+
+  <h3 class="subsection-title" id="gns-decoder">
+    <span data-lang="zh">解码器与输出</span>
+    <span data-lang="en">Decoder &amp; output</span>
+    <span data-lang="ja">デコーダと出力</span>
+  </h3>
+  <p>
+    <span data-lang="zh">解码器是一个<strong>没有隐藏层</strong>的 MLP（即线性映射），直接把 209 维潜在向量映射到物理预测量：粒子节点输出下一时间步的加速度，场节点输出电场值。注意解码器<strong>不做层归一化</strong>（论文特别指出，其他所有 MLP 的输出都做归一化，唯独解码器不做）。得到加速度后，用蛙跳格式积分更新粒子速度和位置，再构建新的图继续下一步 rollout。</span>
+    <span data-lang="en">The decoder is an MLP <strong>with no hidden layers</strong> (i.e. a linear map), directly mapping the 209-dimensional latent vector to physical predictions: particle nodes output acceleration for the next time step, field nodes output E-field values. Notably, the decoder does <strong>not</strong> apply layer normalisation (the paper specifically notes this is the only MLP whose output is not normalised). Acceleration is then integrated with leapfrog to update particle velocities and positions, and a new graph is constructed for the next rollout step.</span>
+    <span data-lang="ja">デコーダは<strong>隠れ層を持たない</strong> MLP（線形写像）であり、209 次元の潜在ベクトルを物理的な予測量に直接マッピングします：粒子ノードは次のタイムステップの加速度を、場ノードは電場値を出力します。注目すべき点として、デコーダは<strong>層正規化を適用しません</strong>（論文では、他のすべての MLP の出力は正規化されるが、デコーダだけが例外であると明記されています）。加速度は蛙跳び積分によって粒子の速度と位置の更新に用いられ、新しいグラフが構築されて次のロールアウトステップへと続きます。</span>
+  </p>
+</section>
+
+<footer style="margin-top:4rem;padding-top:1.5rem;border-top:.5px solid var(--border);font-size:12px;color:var(--text2);line-height:1.8">
+  <p data-lang="zh">笔记整理自 PIC 方法和 GNN 相关学习资料，仅供个人学习参考使用。</p>
+  <p data-lang="en">Notes compiled from learning materials on the PIC method and GNN, for personal study purposes only.</p>
+  <p data-lang="ja">このノートは PIC 法および GNN に関する学習資料をもとに整理したものであり、個人の学習参考用としてのみ使用しています。</p>
+</footer>
+
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+// ── KaTeX ──
+renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+
+// ── Language switcher ──
+const LANG_LABELS = {zh:'简体中文', en:'English', ja:'日本語'};
+let currentLang = 'zh';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.body.className = 'lang-' + lang;
+  document.getElementById('langCurrentLabel').textContent = LANG_LABELS[lang];
+  document.querySelectorAll('.lang-option').forEach(btn => {
+    const active = btn.dataset.langTarget === lang;
+    btn.classList.toggle('active', active);
+  });
+  closeLangMenu();
+  // re-render KaTeX after DOM change
+  renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+}
+
+function toggleLangMenu() {
+  const btn = document.getElementById('langCurrentBtn');
+  const drop = document.getElementById('langDropdown');
+  const open = drop.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+
+function closeLangMenu() {
+  document.getElementById('langDropdown').classList.remove('open');
+  document.getElementById('langCurrentBtn').classList.remove('open');
+}
+
+document.addEventListener('click', e => {
+  if (!document.getElementById('langSwitcher').contains(e.target)) closeLangMenu();
+});
+
+// ── Note toggle ──
+function toggleNote(id) {
+  const panel = document.getElementById(id);
+  const btn = panel.previousElementSibling;
+  const isOpen = !panel.hidden;
+  panel.hidden = isOpen;
+  btn.setAttribute('aria-expanded', String(!isOpen));
+}
+
+// ── CFL calculator ──
+const C = 2.998e8;
+function updateCFL() {
+  const dx  = parseFloat(document.getElementById('c_dx').value) || 1e-9;
+  const dim = Math.max(1,Math.min(3,Math.round(parseFloat(document.getElementById('c_dim').value)||1)));
+  const dt  = parseFloat(document.getElementById('c_dt').value) || 0;
+  const dtMax = dx/(C*Math.sqrt(dim));
+  const ratio = dt/dtMax;
+  const ok = ratio < 1;
+  const labels = {
+    zh:{lim:'最大允许 Δt（CFL 上限）',ratio:'你的 Δt / Δt_max',ok:'✓ 满足 CFL 条件，数值稳定',bad:'⚠ 违反 CFL 条件，模拟将发散'},
+    en:{lim:'Max allowed Δt (CFL limit)',ratio:'Your Δt / Δt_max',ok:'✓ CFL satisfied — numerically stable',bad:'⚠ CFL violated — simulation will diverge'},
+    ja:{lim:'最大許容 Δt（CFL 上限）',ratio:'あなたの Δt / Δt_max',ok:'✓ CFL 条件を満たす — 数値的に安定',bad:'⚠ CFL 条件違反 — シミュレーションが発散'}
+  };
+  const L = labels[currentLang];
+  document.getElementById('cfl-out').innerHTML=`
+    <div class="result-card"><div class="rlabel">${L.lim}</div><div class="rvalue">${dtMax.toExponential(3)} s</div><div class="rtag">dim = ${dim}</div></div>
+    <div class="result-card"><div class="rlabel">${L.ratio}</div><div class="rvalue ${ok?'':'warn-val'}">${ratio.toFixed(3)}</div><div class="rtag">${ok?L.ok:L.bad}</div></div>`;
+}
+['c_dx','c_dim','c_dt'].forEach(id=>document.getElementById(id).addEventListener('input',updateCFL));
+updateCFL();
+
+// ── Boris demo ──
+const canvas=document.getElementById('boriscanvas'),ctx=canvas.getContext('2d');
+const QM=1,B0=1,V0=1,R=V0/(QM*B0);
+let bState={x:R,y:0,vx:0,vy:V0},eState={x:R,y:0,vx:0,vy:V0};
+let bTrail=[],eTrail=[];
+let simDt=0.3,animId=null;
+
+function borisStep(p,dt){
+  const t=QM*dt/2*B0,s=2*t/(1+t*t);
+  const vxm=p.vx,vym=p.vy;
+  const vxp=vxm+vym*t,vyp=vym-vxm*t;
+  return{x:p.x+(vxm+vyp*s)*dt,y:p.y+(vym-vxp*s)*dt,vx:vxm+vyp*s,vy:vym-vxp*s};
+}
+function eulerStep(p,dt){
+  return{x:p.x+p.vx*dt,y:p.y+p.vy*dt,vx:p.vx+QM*p.vy*B0*dt,vy:p.vy-QM*p.vx*B0*dt};
+}
+function resetSim(){bState={x:R,y:0,vx:0,vy:V0};eState={x:R,y:0,vx:0,vy:V0};bTrail=[{...bState}];eTrail=[{...eState}];}
+
+function drawBoris(){
+  const rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height,dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  ctx.fillStyle=dark?'#222018':'#f0ede6';ctx.fillRect(0,0,W,H);
+  let maxR=R*1.6;
+  [...bTrail,...eTrail].forEach(p=>{const r=Math.sqrt(p.x*p.x+p.y*p.y);if(isFinite(r)&&r>maxR)maxR=Math.min(r,R*8);});
+  const cx=W/2,cy=H/2,sc=Math.min(W,H)/2/(maxR*1.15+1e-9);
+  const px=(x,y)=>[cx+x*sc,cy-y*sc];
+  // grid
+  ctx.strokeStyle=dark?'#2e2c24':'#ddd8cc';ctx.lineWidth=.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+  // theory circle
+  ctx.strokeStyle=dark?'#555':'#aaa';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
+  ctx.beginPath();for(let a=0;a<=360;a+=2){const r=a*Math.PI/180,[px2,py2]=px(R*Math.cos(r),R*Math.sin(r));a===0?ctx.moveTo(px2,py2):ctx.lineTo(px2,py2);}ctx.stroke();ctx.setLineDash([]);
+  // euler
+  ctx.strokeStyle='#c0392b';ctx.lineWidth=1.6;ctx.beginPath();eTrail.forEach((p,i)=>{const[x,y]=px(p.x,p.y);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  // boris
+  ctx.strokeStyle='#3a56d4';ctx.lineWidth=2;ctx.beginPath();bTrail.forEach((p,i)=>{const[x,y]=px(p.x,p.y);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  // dots
+  const[bx,by]=px(bState.x,bState.y);ctx.fillStyle='#3a56d4';ctx.beginPath();ctx.arc(bx,by,4,0,Math.PI*2);ctx.fill();
+  const[ex,ey]=px(eState.x,eState.y);ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);ctx.fill();
+  // energy
+  const e0=0.5*V0*V0,eb=0.5*(bState.vx**2+bState.vy**2),ee=0.5*(eState.vx**2+eState.vy**2);
+  const L={zh:{bl:'Boris 动能/初始动能',bt:'理论值恒为 1.000',el:'欧拉 动能/初始动能',et_ok:'尚未明显发散',et_bad:'⚠ 能量持续增长，不稳定'},en:{bl:'Boris KE / Initial KE',bt:'Should always be 1.000',el:'Euler KE / Initial KE',et_ok:'Not yet diverging',et_bad:'⚠ Energy growing — unstable'},ja:{bl:'Boris 運動エネルギー/初期値',bt:'常に 1.000 であるべき',el:'オイラー 運動エネルギー/初期値',et_ok:'まだ発散していない',et_bad:'⚠ エネルギーが増大 — 不安定'}}[currentLang];
+  document.getElementById('boris-energy').innerHTML=`
+    <div class="result-card"><div class="rlabel">${L.bl}</div><div class="rvalue">${(eb/e0).toFixed(4)}</div><div class="rtag">${L.bt}</div></div>
+    <div class="result-card"><div class="rlabel">${L.el}</div><div class="rvalue ${(ee/e0)>1.3||!isFinite(ee)?'warn-val':''}">${isFinite(ee)?(ee/e0).toFixed(4):'∞'}</div><div class="rtag">${isFinite(ee)&&(ee/e0)<1.3?L.et_ok:L.et_bad}</div></div>`;
+}
+
+function animLoop(){
+  bState=borisStep(bState,simDt);bTrail.push({...bState});if(bTrail.length>4000)bTrail.shift();
+  eState=eulerStep(eState,simDt);eTrail.push({...eState});if(eTrail.length>4000)eTrail.shift();
+  drawBoris();animId=requestAnimationFrame(animLoop);
+}
+
+document.getElementById('boris-dt').addEventListener('input',function(){
+  simDt=parseFloat(this.value);
+  document.getElementById('boris-dt-out').textContent=`Δt = ${simDt.toFixed(2)}`;
+  resetSim();
+});
+
+resetSim();
+window.addEventListener('resize',drawBoris);
+if(!animId)animLoop();
+
+// ── Sidebar highlight ──
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-list a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(s.getBoundingClientRect().top<=100)cur=s.id;});
+  navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>
