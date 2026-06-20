@@ -6,83 +6,92 @@
 <title>DerWindntm — Personal Notes</title>
 <link rel="stylesheet" href="nav.css">
 <style>
-body{background:#f2f2f2;}
+html,body{margin:0;padding:0;background:#000;overflow-x:hidden;}
 
-/* fireworks canvas — behind everything */
-#fw-canvas{
+/* ── Space background canvas ── */
+#space-canvas{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;z-index:0;
+  z-index:0;pointer-events:none;
 }
 
-nav{position:relative;z-index:10;}
+/* ── Fireworks + ship canvas ── */
+#fw-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:1;pointer-events:none;
+}
 
-/* ── Hero — centered like Apple ── */
+nav{position:relative;z-index:10;background:rgba(10,30,20,.85);backdrop-filter:blur(12px);}
+.nav-brand{color:#fff !important;}
+.nav-link{color:rgba(255,255,255,.8) !important;}
+.nav-link:hover{background:rgba(255,255,255,.12) !important;color:#fff !important;}
+
+/* ── Hero ── */
 .hero{
-  position:relative;z-index:1;
+  position:relative;z-index:2;
   padding:5rem 1rem 2.5rem;
   text-align:center;
 }
 .hero h1{
-  font-size:40px;font-weight:600;
+  font-size:42px;font-weight:700;
+  color:#fff;
+  text-shadow:0 0 30px rgba(26,220,180,.6), 0 2px 8px rgba(0,0,0,.8);
   margin-bottom:.8rem;letter-spacing:-.5px;
 }
 .hero p{
-  font-size:17px;color:#5c5852;
+  font-size:17px;
+  color:rgba(255,255,255,.7);
   max-width:500px;line-height:1.8;
   margin:0 auto;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
 
-/* ── Scroll strip ── */
+/* ── Strip ── */
 .strip-wrap{
-  position:relative;z-index:1;
+  position:relative;z-index:2;
   padding:2rem 3rem 5rem;
+  overflow:hidden;
 }
 .strip{
   display:flex;gap:20px;
   overflow-x:auto;
+  overflow-y:visible;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
-  padding-bottom:14px;
+  padding:16px 4px 20px;
   cursor:grab;
 }
 .strip:active{cursor:grabbing;}
 .strip::-webkit-scrollbar{height:4px;}
-.strip::-webkit-scrollbar-track{background:#e8e4de;border-radius:2px;}
-.strip::-webkit-scrollbar-thumb{background:#c0bcb4;border-radius:2px;}
+.strip::-webkit-scrollbar-track{background:rgba(255,255,255,.08);border-radius:2px;}
+.strip::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:2px;}
 
 /* ── Card ── */
 .scard{
   flex:0 0 320px;scroll-snap-align:start;
   border-radius:16px;overflow:hidden;
   text-decoration:none;color:#1a1814;
-  background:#fff;
-  box-shadow:0 2px 14px rgba(0,0,0,.08);
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px);
+  box-shadow:0 4px 24px rgba(0,0,0,.4), 0 0 0 0.5px rgba(255,255,255,.15);
   transition:transform .28s cubic-bezier(.34,1.56,.64,1),
              box-shadow .28s ease;
   display:block;
-  border:0.5px solid #e0ddd8;
 }
 .scard:hover{
   transform:scale(1.035);
-  box-shadow:0 10px 36px rgba(0,0,0,.14);
+  box-shadow:0 12px 40px rgba(0,0,0,.5), 0 0 20px rgba(26,220,180,.2);
 }
-.scard-img{
-  width:100%;height:200px;
-  display:block;object-fit:cover;
-}
+.scard-img{width:100%;height:200px;display:block;object-fit:cover;}
 .scard-img-svg{width:100%;height:200px;display:block;}
 .scard-body{padding:1.1rem 1.3rem 1.3rem;}
-.scard-tag{
-  font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:.09em;color:#1a9e85;margin-bottom:.35rem;
-}
-.scard-title{font-size:17px;font-weight:500;line-height:1.4;margin-bottom:.3rem;}
-.scard-sub{font-size:13px;color:#9a9690;line-height:1.6;}
+.scard-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:#1a9e85;margin-bottom:.35rem;}
+.scard-title{font-size:17px;font-weight:500;line-height:1.4;margin-bottom:.3rem;color:#111;}
+.scard-sub{font-size:13px;color:#666;line-height:1.6;}
 </style>
 </head>
 <body>
 
-<!-- fireworks layer -->
+<canvas id="space-canvas"></canvas>
 <canvas id="fw-canvas"></canvas>
 
 <nav>
@@ -106,26 +115,19 @@ nav{position:relative;z-index:10;}
   <!-- ① Plasma Physics Notes -->
   <a class="scard" href="contents.html">
     <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#0a1628"/>
-          <stop offset="100%" stop-color="#0d2a40"/>
-        </linearGradient>
-      </defs>
+      <defs><linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#0a1628"/><stop offset="100%" stop-color="#0d2a40"/>
+      </linearGradient></defs>
       <rect width="320" height="200" fill="url(#g1a)"/>
       <g stroke="rgba(255,255,255,.06)" stroke-width="0.5">
         <line x1="0" y1="50" x2="320" y2="50"/><line x1="0" y1="100" x2="320" y2="100"/>
         <line x1="0" y1="150" x2="320" y2="150"/><line x1="80" y1="0" x2="80" y2="200"/>
         <line x1="160" y1="0" x2="160" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
       </g>
-      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
-            fill="none" stroke="rgba(26,158,133,.35)" stroke-width="8"/>
-      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
-            fill="none" stroke="#1a9e85" stroke-width="2"/>
-      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
-            fill="none" stroke="rgba(100,180,255,.3)" stroke-width="5"/>
-      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
-            fill="none" stroke="#64b4ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50" fill="none" stroke="rgba(26,158,133,.35)" stroke-width="8"/>
+      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50" fill="none" stroke="#1a9e85" stroke-width="2"/>
+      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90" fill="none" stroke="rgba(100,180,255,.3)" stroke-width="5"/>
+      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90" fill="none" stroke="#64b4ff" stroke-width="1.5" stroke-dasharray="5,3"/>
       <text x="14" y="18" fill="rgba(255,255,255,.5)" font-size="11" font-family="monospace">ω</text>
       <line x1="20" y1="22" x2="20" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
       <polygon points="20,20 17,28 23,28" fill="rgba(255,255,255,.3)"/>
@@ -133,8 +135,7 @@ nav{position:relative;z-index:10;}
       <line x1="18" y1="175" x2="302" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
       <polygon points="304,175 296,172 296,178" fill="rgba(255,255,255,.3)"/>
       <text x="210" y="45" fill="#1a9e85" font-size="11" font-family="monospace">D(ω,k)=0</text>
-      <circle cx="120" cy="100" r="3" fill="#1a9e85"/>
-      <circle cx="200" cy="55" r="3" fill="#1a9e85"/>
+      <circle cx="120" cy="100" r="3" fill="#1a9e85"/><circle cx="200" cy="55" r="3" fill="#1a9e85"/>
     </svg>
     <div class="scard-body">
       <div class="scard-tag">Plasma Physics</div>
@@ -146,12 +147,9 @@ nav{position:relative;z-index:10;}
   <!-- ② ML Notes -->
   <a class="scard" href="contents.html">
     <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="g2a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#12102a"/>
-          <stop offset="100%" stop-color="#1a1040"/>
-        </linearGradient>
-      </defs>
+      <defs><linearGradient id="g2a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#12102a"/><stop offset="100%" stop-color="#1a1040"/>
+      </linearGradient></defs>
       <rect width="320" height="200" fill="url(#g2a)"/>
       <g stroke="rgba(160,130,255,.18)" stroke-width="1">
         <line x1="60" y1="50" x2="160" y2="40"/><line x1="60" y1="50" x2="160" y2="80"/>
@@ -193,12 +191,9 @@ nav{position:relative;z-index:10;}
   <!-- ③ Contact -->
   <a class="scard" href="contact.html">
     <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="g3a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#0f1f1a"/>
-          <stop offset="100%" stop-color="#0a2820"/>
-        </linearGradient>
-      </defs>
+      <defs><linearGradient id="g3a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#0f1f1a"/><stop offset="100%" stop-color="#0a2820"/>
+      </linearGradient></defs>
       <rect width="320" height="200" fill="url(#g3a)"/>
       <rect x="70" y="62" width="180" height="110" rx="8" fill="none" stroke="#1a9e85" stroke-width="1.8"/>
       <rect x="70" y="62" width="180" height="110" rx="8" fill="rgba(26,158,133,.07)"/>
@@ -208,10 +203,6 @@ nav{position:relative;z-index:10;}
       <circle cx="160" cy="38" r="4" fill="#1a9e85" opacity=".7"/>
       <circle cx="144" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
       <circle cx="176" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
-      <circle cx="90" cy="40" r="2" fill="rgba(255,255,255,.3)"/>
-      <circle cx="240" cy="45" r="2" fill="rgba(255,255,255,.2)"/>
-      <circle cx="280" cy="80" r="1.5" fill="rgba(255,255,255,.2)"/>
-      <circle cx="40" cy="120" r="1.5" fill="rgba(255,255,255,.15)"/>
     </svg>
     <div class="scard-body">
       <div class="scard-tag">Contact</div>
@@ -241,244 +232,383 @@ nav{position:relative;z-index:10;}
 </div>
 
 <script>
-/* ══════════════════════════════════════════
-   FIREWORKS ENGINE
-   ══════════════════════════════════════════ */
-const canvas = document.getElementById('fw-canvas');
-const ctx    = canvas.getContext('2d');
+/* ══════════════════════════════════════
+   1. SPACE BACKGROUND
+   ══════════════════════════════════════ */
+const spaceCanvas = document.getElementById('space-canvas');
+const sc = spaceCanvas.getContext('2d');
 
-function resize(){
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+function resizeSpace(){
+  spaceCanvas.width  = window.innerWidth;
+  spaceCanvas.height = window.innerHeight;
 }
-resize();
-window.addEventListener('resize', resize);
+resizeSpace();
+window.addEventListener('resize', resizeSpace);
 
-/* colour palettes */
+/* stars */
+const STAR_COUNT = 280;
+const stars = Array.from({length:STAR_COUNT}, ()=>({
+  x: Math.random(),
+  y: Math.random(),
+  r: Math.random()*1.6+0.2,
+  speed: Math.random()*0.00008+0.00002,
+  alpha: Math.random()*0.6+0.3,
+  twinkleSpeed: Math.random()*0.02+0.005,
+  twinkleOffset: Math.random()*Math.PI*2,
+}));
+
+/* nebula blobs */
+const nebulas = [
+  {cx:0.2, cy:0.3, rx:0.35, ry:0.25, color:'rgba(30,60,120,', a:0.18},
+  {cx:0.75,cy:0.55,rx:0.30, ry:0.22, color:'rgba(60,20,100,', a:0.15},
+  {cx:0.5, cy:0.8, rx:0.40, ry:0.20, color:'rgba(20,80,70,',  a:0.12},
+  {cx:0.85,cy:0.15,rx:0.20, ry:0.18, color:'rgba(80,30,60,',  a:0.10},
+];
+
+/* distant planets */
+const planets = [
+  {cx:0.82, cy:0.22, r:28, color:'#3a5a8a', ringColor:'rgba(100,140,200,.35)', hasRing:true,  ringRx:52, ringRy:10},
+  {cx:0.12, cy:0.68, r:18, color:'#8a5a3a', ringColor:null, hasRing:false},
+  {cx:0.60, cy:0.12, r:10, color:'#5a6a4a', ringColor:null, hasRing:false},
+];
+
+let spaceT = 0;
+function drawSpace(){
+  const W = spaceCanvas.width, H = spaceCanvas.height;
+  sc.clearRect(0,0,W,H);
+
+  /* deep space gradient */
+  const grad = sc.createRadialGradient(W*.5,H*.4,0, W*.5,H*.5,Math.max(W,H)*.8);
+  grad.addColorStop(0,'#0a0e1a');
+  grad.addColorStop(0.4,'#060810');
+  grad.addColorStop(1,'#020305');
+  sc.fillStyle = grad;
+  sc.fillRect(0,0,W,H);
+
+  /* nebulas */
+  nebulas.forEach(n=>{
+    const gx = sc.createRadialGradient(n.cx*W,n.cy*H,0, n.cx*W,n.cy*H,n.rx*W);
+    gx.addColorStop(0, n.color+(n.a*1.8)+')');
+    gx.addColorStop(1, n.color+'0)');
+    sc.save();
+    sc.scale(1, n.ry/n.rx);
+    sc.fillStyle = gx;
+    sc.beginPath();
+    sc.arc(n.cx*W, n.cy*H*(n.rx/n.ry), n.rx*W, 0, Math.PI*2);
+    sc.fill();
+    sc.restore();
+  });
+
+  /* planets */
+  planets.forEach(p=>{
+    const px = p.cx*W, py = p.cy*H;
+    /* planet glow */
+    const pglow = sc.createRadialGradient(px-p.r*.3,py-p.r*.3,0, px,py,p.r*2.2);
+    pglow.addColorStop(0,'rgba(255,255,255,.04)');
+    pglow.addColorStop(1,'rgba(0,0,0,0)');
+    sc.fillStyle=pglow; sc.beginPath(); sc.arc(px,py,p.r*2.2,0,Math.PI*2); sc.fill();
+
+    /* ring behind planet */
+    if(p.hasRing){
+      sc.save();
+      sc.translate(px,py);
+      sc.strokeStyle=p.ringColor; sc.lineWidth=6;
+      sc.beginPath(); sc.ellipse(0,8,p.ringRx,p.ringRy,0,Math.PI*.1,Math.PI*1.1); sc.stroke();
+      sc.restore();
+    }
+
+    /* planet body */
+    const pbody = sc.createRadialGradient(px-p.r*.35,py-p.r*.35,p.r*.05, px,py,p.r);
+    pbody.addColorStop(0,'rgba(255,255,255,.18)');
+    pbody.addColorStop(0.4,p.color);
+    pbody.addColorStop(1,'rgba(0,0,0,.6)');
+    sc.fillStyle=pbody; sc.beginPath(); sc.arc(px,py,p.r,0,Math.PI*2); sc.fill();
+
+    /* ring in front */
+    if(p.hasRing){
+      sc.save();
+      sc.translate(px,py);
+      sc.strokeStyle=p.ringColor; sc.lineWidth=6;
+      sc.beginPath(); sc.ellipse(0,8,p.ringRx,p.ringRy,0,Math.PI*1.1,Math.PI*2.1); sc.stroke();
+      sc.restore();
+    }
+  });
+
+  /* twinkling stars */
+  stars.forEach(s=>{
+    const tw = 0.5 + 0.5*Math.sin(spaceT*s.twinkleSpeed*60 + s.twinkleOffset);
+    const a  = s.alpha * (0.5 + 0.5*tw);
+    /* slow parallax drift */
+    const sx = ((s.x + spaceT*s.speed) % 1) * W;
+    const sy = s.y * H;
+    sc.save();
+    sc.globalAlpha = a;
+    if(s.r > 1.2){
+      /* cross sparkle for brighter stars */
+      sc.strokeStyle='#fff'; sc.lineWidth=0.6;
+      sc.beginPath(); sc.moveTo(sx-s.r*2,sy); sc.lineTo(sx+s.r*2,sy); sc.stroke();
+      sc.beginPath(); sc.moveTo(sx,sy-s.r*2); sc.lineTo(sx,sy+s.r*2); sc.stroke();
+    }
+    sc.fillStyle='#fff';
+    sc.beginPath(); sc.arc(sx,sy,s.r,0,Math.PI*2); sc.fill();
+    sc.restore();
+  });
+
+  spaceT += 0.001;
+  requestAnimationFrame(drawSpace);
+}
+drawSpace();
+
+
+/* ══════════════════════════════════════
+   2. FIREWORKS + SPACESHIP
+   ══════════════════════════════════════ */
+const fwCanvas = document.getElementById('fw-canvas');
+const ctx = fwCanvas.getContext('2d');
+
+function resizeFw(){
+  fwCanvas.width  = window.innerWidth;
+  fwCanvas.height = window.innerHeight;
+}
+resizeFw();
+window.addEventListener('resize', resizeFw);
+
 const PALETTES = [
   ['#ff6b6b','#ff8e53','#ffd93d','#fff'],
   ['#6bcbff','#a78bfa','#f472b6','#fff'],
   ['#34d399','#60a5fa','#f59e0b','#fff'],
-  ['#ff6eb4','#ff9de2','#ffd6f0','#fff'],
   ['#ffd700','#ff8c00','#ff4500','#fff'],
 ];
 
 /* ── Particle ── */
-class Particle {
-  constructor(x, y, color, vx, vy, size, life, gravity=0.06){
-    this.x=x; this.y=y; this.color=color;
-    this.vx=vx; this.vy=vy; this.size=size;
-    this.life=life; this.maxLife=life;
-    this.gravity=gravity;
+class Particle{
+  constructor(x,y,color,vx,vy,size,life,g=0.06){
+    Object.assign(this,{x,y,color,vx,vy,size,life,maxLife:life,g});
   }
-  update(){
-    this.x  += this.vx;
-    this.y  += this.vy;
-    this.vy += this.gravity;
-    this.vx *= 0.97;
-    this.vy *= 0.97;
-    this.life--;
-  }
+  update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.g;this.vx*=.97;this.vy*=.97;this.life--;}
   draw(){
-    const alpha = Math.max(0, this.life / this.maxLife);
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle   = this.color;
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur  = 6;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI*2);
-    ctx.fill();
-    ctx.restore();
+    const a=Math.max(0,this.life/this.maxLife);
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle=this.color;
+    ctx.shadowColor=this.color;ctx.shadowBlur=6;
+    ctx.beginPath();ctx.arc(this.x,this.y,this.size*a,0,Math.PI*2);ctx.fill();ctx.restore();
   }
 }
 
-/* ── Trail particle (mouse tail) ── */
-class TrailParticle {
-  constructor(x, y){
-    const palette = PALETTES[Math.floor(Math.random()*PALETTES.length)];
-    this.color = palette[Math.floor(Math.random()*palette.length)];
-    this.x=x; this.y=y;
-    this.vx=(Math.random()-.5)*1.2;
-    this.vy=(Math.random()-.5)*1.2 - 0.5;
+/* ── Trail ── */
+class TrailParticle{
+  constructor(x,y){
+    const pal=PALETTES[Math.floor(Math.random()*PALETTES.length)];
+    this.color=pal[Math.floor(Math.random()*pal.length)];
+    this.x=x;this.y=y;
+    this.vx=(Math.random()-.5)*1.2;this.vy=(Math.random()-.5)*1.2-.5;
     this.size=Math.random()*2.5+1;
-    this.life=Math.floor(Math.random()*25+15);
-    this.maxLife=this.life;
+    this.life=Math.floor(Math.random()*25+15);this.maxLife=this.life;
   }
-  update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=0.04; this.vx*=0.96; this.life--; }
+  update(){this.x+=this.vx;this.y+=this.vy;this.vy+=.04;this.vx*=.96;this.life--;}
   draw(){
-    const a = (this.life/this.maxLife)*0.55;
-    ctx.save();
-    ctx.globalAlpha=a;
-    ctx.fillStyle=this.color;
-    ctx.shadowColor=this.color;
-    ctx.shadowBlur=4;
-    ctx.beginPath();
-    ctx.arc(this.x,this.y,this.size*(this.life/this.maxLife),0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
+    const a=(this.life/this.maxLife)*.55;
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle=this.color;
+    ctx.shadowColor=this.color;ctx.shadowBlur=4;
+    ctx.beginPath();ctx.arc(this.x,this.y,this.size*(this.life/this.maxLife),0,Math.PI*2);
+    ctx.fill();ctx.restore();
   }
 }
 
-/* ── Burst firework ── */
-function burst(x, y, count=80, palette=null){
-  const pal = palette || PALETTES[Math.floor(Math.random()*PALETTES.length)];
+function burst(x,y,count=80,palette=null){
+  const pal=palette||PALETTES[Math.floor(Math.random()*PALETTES.length)];
   for(let i=0;i<count;i++){
-    const angle  = (Math.PI*2/count)*i + Math.random()*.3;
-    const speed  = Math.random()*5+2;
-    const color  = pal[Math.floor(Math.random()*pal.length)];
-    const size   = Math.random()*2.5+1;
-    const life   = Math.floor(Math.random()*40+50);
-    particles.push(new Particle(
-      x, y, color,
-      Math.cos(angle)*speed,
-      Math.sin(angle)*speed,
-      size, life
-    ));
+    const angle=(Math.PI*2/count)*i+Math.random()*.3;
+    const speed=Math.random()*5+2;
+    particles.push(new Particle(x,y,pal[Math.floor(Math.random()*pal.length)],
+      Math.cos(angle)*speed,Math.sin(angle)*speed,Math.random()*2.5+1,Math.floor(Math.random()*40+50)));
   }
-  /* sparkle ring */
   for(let i=0;i<20;i++){
-    const angle = Math.random()*Math.PI*2;
-    const speed = Math.random()*2+0.5;
-    particles.push(new Particle(
-      x, y, '#fff',
-      Math.cos(angle)*speed, Math.sin(angle)*speed,
-      1, Math.floor(Math.random()*30+20), 0.02
-    ));
+    const a=Math.random()*Math.PI*2,s=Math.random()*2+.5;
+    particles.push(new Particle(x,y,'#fff',Math.cos(a)*s,Math.sin(a)*s,1,Math.floor(Math.random()*30+20),.02));
   }
 }
 
-/* ── Rocket (opening show) ── */
-class Rocket {
+class Rocket{
   constructor(){
-    this.x   = Math.random()*canvas.width*.8 + canvas.width*.1;
-    this.y   = canvas.height + 10;
-    this.tx  = this.x + (Math.random()-.5)*200;
-    this.ty  = Math.random()*canvas.height*.45 + canvas.height*.05;
-    const dx = this.tx - this.x;
-    const dy = this.ty - this.y;
-    const dist = Math.sqrt(dx*dx+dy*dy);
-    const speed = Math.random()*4+8;
-    this.vx  = (dx/dist)*speed;
-    this.vy  = (dy/dist)*speed;
-    this.trail=[];
-    this.done=false;
-    const pal = PALETTES[Math.floor(Math.random()*PALETTES.length)];
-    this.color = pal[0];
-    this.palette = pal;
+    this.x=Math.random()*fwCanvas.width*.8+fwCanvas.width*.1;
+    this.y=fwCanvas.height+10;
+    this.tx=this.x+(Math.random()-.5)*200;
+    this.ty=Math.random()*fwCanvas.height*.45+fwCanvas.height*.05;
+    const dx=this.tx-this.x,dy=this.ty-this.y,dist=Math.sqrt(dx*dx+dy*dy),speed=Math.random()*4+8;
+    this.vx=(dx/dist)*speed;this.vy=(dy/dist)*speed;
+    this.trail=[];this.done=false;
+    const pal=PALETTES[Math.floor(Math.random()*PALETTES.length)];
+    this.color=pal[0];this.palette=pal;
   }
   update(){
-    this.trail.push({x:this.x, y:this.y});
-    if(this.trail.length>12) this.trail.shift();
-    this.x+=this.vx; this.y+=this.vy;
-    if(this.vy>0 || Math.abs(this.y-this.ty)<10){
-      burst(this.x, this.y, 100, this.palette);
-      this.done=true;
-    }
+    this.trail.push({x:this.x,y:this.y});
+    if(this.trail.length>12)this.trail.shift();
+    this.x+=this.vx;this.y+=this.vy;
+    if(this.vy>0||Math.abs(this.y-this.ty)<10){burst(this.x,this.y,100,this.palette);this.done=true;}
   }
   draw(){
-    for(let i=0;i<this.trail.length;i++){
-      const a=(i/this.trail.length)*0.7;
-      ctx.save();
-      ctx.globalAlpha=a;
-      ctx.fillStyle=this.color;
-      ctx.shadowColor=this.color;
-      ctx.shadowBlur=8;
-      ctx.beginPath();
-      ctx.arc(this.trail[i].x, this.trail[i].y, 2.5*(i/this.trail.length), 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
+    this.trail.forEach((p,i)=>{
+      const a=(i/this.trail.length)*.7;
+      ctx.save();ctx.globalAlpha=a;ctx.fillStyle=this.color;
+      ctx.shadowColor=this.color;ctx.shadowBlur=8;
+      ctx.beginPath();ctx.arc(p.x,p.y,2.5*(i/this.trail.length),0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+    ctx.save();ctx.globalAlpha=.95;ctx.fillStyle='#fff';
+    ctx.shadowColor=this.color;ctx.shadowBlur=14;
+    ctx.beginPath();ctx.arc(this.x,this.y,3,0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+}
+
+/* ══ SPACESHIP ══ */
+class Spaceship{
+  constructor(){this.reset(true);}
+  reset(init=false){
+    const W=fwCanvas.width, H=fwCanvas.height;
+    /* random vertical position in upper 70% of screen */
+    this.y  = H*(0.08 + Math.random()*0.55);
+    this.x  = init ? W*Math.random() : -220;
+    this.vy = (Math.random()-.5)*.3;
+    this.speed = 2.8 + Math.random()*2.2;
+    this.scale = 0.7 + Math.random()*.7;
+    this.engineFlicker = 0;
+    this.thrusterParticles = [];
+  }
+  update(){
+    this.x += this.speed;
+    this.y += this.vy;
+    this.engineFlicker = Math.random();
+    /* thruster exhaust */
+    if(Math.random()<.6){
+      const sc2=this.scale;
+      this.thrusterParticles.push({
+        x:this.x - 90*sc2,
+        y:this.y + (Math.random()-.5)*8*sc2,
+        vx:-(Math.random()*2+1),
+        vy:(Math.random()-.5)*.8,
+        life:Math.floor(Math.random()*18+8),
+        maxLife:26,
+        size:Math.random()*3*sc2+1,
+        color:Math.random()<.5?'#4af':'#fa4',
+      });
     }
+    this.thrusterParticles=this.thrusterParticles.filter(p=>p.life>0);
+    this.thrusterParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;});
+    if(this.x > fwCanvas.width+240) this.reset();
+  }
+  draw(){
+    const s=this.scale, x=this.x, y=this.y;
+
+    /* thruster particles */
+    this.thrusterParticles.forEach(p=>{
+      const a=(p.life/p.maxLife)*.8;
+      ctx.save();ctx.globalAlpha=a;ctx.fillStyle=p.color;
+      ctx.shadowColor=p.color;ctx.shadowBlur=8;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size*(p.life/p.maxLife),0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+
     ctx.save();
-    ctx.globalAlpha=0.95;
-    ctx.fillStyle='#fff';
-    ctx.shadowColor=this.color;
-    ctx.shadowBlur=14;
+    ctx.translate(x,y);
+    ctx.scale(s,s);
+
+    /* engine glow */
+    const eFlick = .6+this.engineFlicker*.4;
+    const eg=ctx.createRadialGradient(-88,0,0,-88,0,30);
+    eg.addColorStop(0,`rgba(80,180,255,${eFlick*.9})`);
+    eg.addColorStop(0.4,`rgba(40,100,255,${eFlick*.4})`);
+    eg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=eg;ctx.beginPath();ctx.arc(-88,0,30,0,Math.PI*2);ctx.fill();
+
+    /* body */
+    ctx.fillStyle='#b0c8e0';
+    ctx.shadowColor='rgba(100,180,255,.5)';ctx.shadowBlur=12;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
-    ctx.fill();
+    ctx.moveTo(80,0);
+    ctx.lineTo(40,-14);ctx.lineTo(-70,-14);ctx.lineTo(-90,0);ctx.lineTo(-70,14);ctx.lineTo(40,14);
+    ctx.closePath();ctx.fill();
+
+    /* cockpit */
+    const cg=ctx.createRadialGradient(30,-6,0,30,-6,20);
+    cg.addColorStop(0,'rgba(150,220,255,.9)');cg.addColorStop(1,'rgba(20,80,140,.7)');
+    ctx.fillStyle=cg;ctx.shadowColor='rgba(100,200,255,.8)';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.ellipse(30,-4,22,12,0,0,Math.PI*2);ctx.fill();
+
+    /* top wing */
+    ctx.fillStyle='#8aaac0';ctx.shadowBlur=0;
+    ctx.beginPath();ctx.moveTo(10,-14);ctx.lineTo(-20,-14);ctx.lineTo(-40,-36);ctx.lineTo(0,-36);ctx.closePath();ctx.fill();
+    /* bottom wing */
+    ctx.beginPath();ctx.moveTo(10,14);ctx.lineTo(-20,14);ctx.lineTo(-40,36);ctx.lineTo(0,36);ctx.closePath();ctx.fill();
+
+    /* engine nacelle */
+    ctx.fillStyle='#607080';
+    ctx.beginPath();ctx.roundRect(-90,-8,28,16,4);ctx.fill();
+
+    /* engine inner glow */
+    ctx.fillStyle=`rgba(80,180,255,${eFlick})`;
+    ctx.beginPath();ctx.ellipse(-88,0,6,5,0,0,Math.PI*2);ctx.fill();
+
+    /* hull detail lines */
+    ctx.strokeStyle='rgba(180,210,240,.3)';ctx.lineWidth=1;ctx.shadowBlur=0;
+    ctx.beginPath();ctx.moveTo(60,0);ctx.lineTo(-60,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(20,-14);ctx.lineTo(20,14);ctx.stroke();
+
     ctx.restore();
   }
 }
 
-let particles = [];
-let rockets   = [];
-let trails    = [];
-let mouse     = {x:-999, y:-999, moving:false};
-let trailTimer = 0;
+let particles=[], rockets=[], trails=[], ships=[];
 
-/* ── mouse spray ── */
+/* spawn 2 spaceships at different times */
+ships.push(new Spaceship());
+setTimeout(()=>ships.push(new Spaceship()), 3500);
+
+/* mouse spray */
+let trailTimer=0;
 document.addEventListener('mousemove', e=>{
-  mouse.x=e.clientX; mouse.y=e.clientY; mouse.moving=true;
   trailTimer++;
-  if(trailTimer%2===0){
-    for(let i=0;i<3;i++) trails.push(new TrailParticle(mouse.x, mouse.y));
-  }
+  if(trailTimer%2===0) for(let i=0;i<3;i++) trails.push(new TrailParticle(e.clientX,e.clientY));
 });
-document.addEventListener('mouseleave', ()=>{ mouse.moving=false; });
 
-/* mouse idle spray */
-let idleTimer=0;
-setInterval(()=>{
-  if(!mouse.moving) return;
-  idleTimer++;
-  if(idleTimer%4===0){
-    for(let i=0;i<5;i++) trails.push(new TrailParticle(mouse.x, mouse.y));
-  }
-},16);
-
-/* ── opening show: launch rockets over 4 seconds ── */
-let openingDone = false;
-let launchCount = 0;
-const TOTAL_ROCKETS = 14;
-const launchInterval = setInterval(()=>{
+/* opening rockets — 5 seconds: ~17 rockets at 285ms each */
+let openingDone=false, launchCount=0;
+const TOTAL_ROCKETS=17;
+const launchInterval=setInterval(()=>{
   rockets.push(new Rocket());
   launchCount++;
   if(launchCount>=TOTAL_ROCKETS){
     clearInterval(launchInterval);
-    setTimeout(()=>{ openingDone=true; }, 3000);
+    setTimeout(()=>{ openingDone=true; },2000);
   }
-}, 280);
+},285);
 
-/* ── ambient auto-fireworks after opening ── */
+/* ambient fireworks */
 setInterval(()=>{
-  if(!openingDone) return;
-  if(Math.random()<0.35){
-    const x = Math.random()*canvas.width*.8 + canvas.width*.1;
-    const y = Math.random()*canvas.height*.5 + canvas.height*.05;
-    burst(x, y, 60);
+  if(!openingDone)return;
+  if(Math.random()<.35){
+    burst(Math.random()*fwCanvas.width*.8+fwCanvas.width*.1,
+          Math.random()*fwCanvas.height*.5+fwCanvas.height*.05, 60);
   }
-}, 2200);
+},2200);
 
-/* ── main loop ── */
-function loop(){
-  /* clear with slight fade for trail glow */
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  /* rockets */
-  rockets = rockets.filter(r=>!r.done);
-  rockets.forEach(r=>{ r.update(); r.draw(); });
-
-  /* burst particles */
-  particles = particles.filter(p=>p.life>0);
-  particles.forEach(p=>{ p.update(); p.draw(); });
-
-  /* trail particles */
-  trails = trails.filter(t=>t.life>0);
-  trails.forEach(t=>{ t.update(); t.draw(); });
-
-  requestAnimationFrame(loop);
+function fwLoop(){
+  ctx.clearRect(0,0,fwCanvas.width,fwCanvas.height);
+  rockets=rockets.filter(r=>!r.done);
+  rockets.forEach(r=>{r.update();r.draw();});
+  particles=particles.filter(p=>p.life>0);
+  particles.forEach(p=>{p.update();p.draw();});
+  trails=trails.filter(t=>t.life>0);
+  trails.forEach(t=>{t.update();t.draw();});
+  ships.forEach(s=>{s.update();s.draw();});
+  requestAnimationFrame(fwLoop);
 }
-loop();
+fwLoop();
 
-/* ── drag to scroll ── */
-const strip = document.getElementById('strip');
-let isDown=false, startX, scrollLeft;
-strip.addEventListener('mousedown', e=>{ isDown=true; strip.style.cursor='grabbing'; startX=e.pageX-strip.offsetLeft; scrollLeft=strip.scrollLeft; });
-strip.addEventListener('mouseleave', ()=>{ isDown=false; strip.style.cursor='grab'; });
-strip.addEventListener('mouseup',    ()=>{ isDown=false; strip.style.cursor='grab'; });
-strip.addEventListener('mousemove',  e=>{ if(!isDown)return; e.preventDefault(); const x=e.pageX-strip.offsetLeft; strip.scrollLeft=scrollLeft-(x-startX)*1.2; });
+/* drag scroll */
+const strip=document.getElementById('strip');
+let isDown=false,startX,scrollLeft;
+strip.addEventListener('mousedown',e=>{isDown=true;strip.style.cursor='grabbing';startX=e.pageX-strip.offsetLeft;scrollLeft=strip.scrollLeft;});
+strip.addEventListener('mouseleave',()=>{isDown=false;strip.style.cursor='grab';});
+strip.addEventListener('mouseup',()=>{isDown=false;strip.style.cursor='grab';});
+strip.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-strip.offsetLeft;strip.scrollLeft=scrollLeft-(x-startX)*1.2;});
 </script>
-
 </body>
 </html>
