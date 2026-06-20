@@ -6,71 +6,85 @@
 <title>DerWindntm — Personal Notes</title>
 <link rel="stylesheet" href="nav.css">
 <style>
-.hero{padding:5rem 3rem 2.5rem;max-width:960px;margin:0 auto;}
-.hero h1{font-size:36px;font-weight:500;margin-bottom:.8rem;}
-.hero p{font-size:16px;color:#5c5852;max-width:540px;line-height:1.8;}
+body{background:#f2f2f2;}
+
+/* fireworks canvas — behind everything */
+#fw-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
+
+nav{position:relative;z-index:10;}
+
+/* ── Hero — centered like Apple ── */
+.hero{
+  position:relative;z-index:1;
+  padding:5rem 1rem 2.5rem;
+  text-align:center;
+}
+.hero h1{
+  font-size:40px;font-weight:600;
+  margin-bottom:.8rem;letter-spacing:-.5px;
+}
+.hero p{
+  font-size:17px;color:#5c5852;
+  max-width:500px;line-height:1.8;
+  margin:0 auto;
+}
 
 /* ── Scroll strip ── */
-.strip-wrap{padding:0 3rem 5rem;overflow:hidden;}
+.strip-wrap{
+  position:relative;z-index:1;
+  padding:2rem 3rem 5rem;
+}
 .strip{
-  display:flex;
-  gap:20px;
+  display:flex;gap:20px;
   overflow-x:auto;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
-  padding-bottom:12px;
+  padding-bottom:14px;
   cursor:grab;
 }
 .strip:active{cursor:grabbing;}
 .strip::-webkit-scrollbar{height:4px;}
-.strip::-webkit-scrollbar-track{background:#f0ede6;border-radius:2px;}
-.strip::-webkit-scrollbar-thumb{background:#c8c4bc;border-radius:2px;}
+.strip::-webkit-scrollbar-track{background:#e8e4de;border-radius:2px;}
+.strip::-webkit-scrollbar-thumb{background:#c0bcb4;border-radius:2px;}
 
 /* ── Card ── */
 .scard{
-  flex:0 0 320px;
-  scroll-snap-align:start;
-  border-radius:16px;
-  overflow:hidden;
-  text-decoration:none;
-  color:#1a1814;
+  flex:0 0 320px;scroll-snap-align:start;
+  border-radius:16px;overflow:hidden;
+  text-decoration:none;color:#1a1814;
   background:#fff;
-  box-shadow:0 2px 12px rgba(0,0,0,.07);
-  transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
+  box-shadow:0 2px 14px rgba(0,0,0,.08);
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1),
+             box-shadow .28s ease;
   display:block;
-  border:0.5px solid #e8e4de;
+  border:0.5px solid #e0ddd8;
 }
 .scard:hover{
-  transform:scale(1.03);
-  box-shadow:0 8px 32px rgba(0,0,0,.13);
+  transform:scale(1.035);
+  box-shadow:0 10px 36px rgba(0,0,0,.14);
 }
 .scard-img{
-  width:100%;
-  height:200px;
-  display:block;
-  object-fit:cover;
+  width:100%;height:200px;
+  display:block;object-fit:cover;
 }
-.scard-img-svg{
-  width:100%;
-  height:200px;
-  display:block;
-}
-.scard-body{
-  padding:1.1rem 1.3rem 1.3rem;
-}
+.scard-img-svg{width:100%;height:200px;display:block;}
+.scard-body{padding:1.1rem 1.3rem 1.3rem;}
 .scard-tag{
   font-size:11px;font-weight:600;text-transform:uppercase;
   letter-spacing:.09em;color:#1a9e85;margin-bottom:.35rem;
 }
-.scard-title{
-  font-size:17px;font-weight:500;line-height:1.4;margin-bottom:.3rem;
-}
-.scard-sub{
-  font-size:13px;color:#9a9690;line-height:1.6;
-}
+.scard-title{font-size:17px;font-weight:500;line-height:1.4;margin-bottom:.3rem;}
+.scard-sub{font-size:13px;color:#9a9690;line-height:1.6;}
 </style>
 </head>
 <body>
+
+<!-- fireworks layer -->
+<canvas id="fw-canvas"></canvas>
+
 <nav>
   <a class="nav-brand" href="index.html">DerWindntm</a>
   <ul class="nav-items">
@@ -83,7 +97,7 @@
 
 <div class="hero">
   <h1>Welcome やっほ！</h1>
-  <p>A personal site collecting notes on plasma physics, AI, and programming. Browse the notes or leave a message on the contact page.</p>
+  <p>A personal site collecting notes on plasma physics, AI, and programming.<br>Browse the notes or leave a message on the contact page.</p>
 </div>
 
 <div class="strip-wrap">
@@ -99,36 +113,26 @@
         </linearGradient>
       </defs>
       <rect width="320" height="200" fill="url(#g1a)"/>
-      <!-- grid lines -->
       <g stroke="rgba(255,255,255,.06)" stroke-width="0.5">
-        <line x1="0" y1="50" x2="320" y2="50"/>
-        <line x1="0" y1="100" x2="320" y2="100"/>
-        <line x1="0" y1="150" x2="320" y2="150"/>
-        <line x1="80" y1="0" x2="80" y2="200"/>
-        <line x1="160" y1="0" x2="160" y2="200"/>
-        <line x1="240" y1="0" x2="240" y2="200"/>
+        <line x1="0" y1="50" x2="320" y2="50"/><line x1="0" y1="100" x2="320" y2="100"/>
+        <line x1="0" y1="150" x2="320" y2="150"/><line x1="80" y1="0" x2="80" y2="200"/>
+        <line x1="160" y1="0" x2="160" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
       </g>
-      <!-- dispersion curve glow -->
       <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
             fill="none" stroke="rgba(26,158,133,.35)" stroke-width="8"/>
       <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
             fill="none" stroke="#1a9e85" stroke-width="2"/>
-      <!-- second mode -->
       <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
             fill="none" stroke="rgba(100,180,255,.3)" stroke-width="5"/>
       <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
             fill="none" stroke="#64b4ff" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <!-- omega axis label -->
       <text x="14" y="18" fill="rgba(255,255,255,.5)" font-size="11" font-family="monospace">ω</text>
       <line x1="20" y1="22" x2="20" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
       <polygon points="20,20 17,28 23,28" fill="rgba(255,255,255,.3)"/>
-      <!-- k axis -->
       <text x="298" y="195" fill="rgba(255,255,255,.5)" font-size="11" font-family="monospace">k</text>
       <line x1="18" y1="175" x2="302" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
       <polygon points="304,175 296,172 296,178" fill="rgba(255,255,255,.3)"/>
-      <!-- D(ω,k)=0 label -->
       <text x="210" y="45" fill="#1a9e85" font-size="11" font-family="monospace">D(ω,k)=0</text>
-      <!-- dots on curve -->
       <circle cx="120" cy="100" r="3" fill="#1a9e85"/>
       <circle cx="200" cy="55" r="3" fill="#1a9e85"/>
     </svg>
@@ -149,57 +153,32 @@
         </linearGradient>
       </defs>
       <rect width="320" height="200" fill="url(#g2a)"/>
-      <!-- edges -->
       <g stroke="rgba(160,130,255,.18)" stroke-width="1">
-        <!-- input to hidden -->
-        <line x1="60" y1="50" x2="160" y2="40"/>
-        <line x1="60" y1="50" x2="160" y2="80"/>
-        <line x1="60" y1="50" x2="160" y2="120"/>
-        <line x1="60" y1="50" x2="160" y2="160"/>
-        <line x1="60" y1="100" x2="160" y2="40"/>
-        <line x1="60" y1="100" x2="160" y2="80"/>
-        <line x1="60" y1="100" x2="160" y2="120"/>
-        <line x1="60" y1="100" x2="160" y2="160"/>
-        <line x1="60" y1="150" x2="160" y2="40"/>
-        <line x1="60" y1="150" x2="160" y2="80"/>
-        <line x1="60" y1="150" x2="160" y2="120"/>
-        <line x1="60" y1="150" x2="160" y2="160"/>
-        <!-- hidden to output -->
-        <line x1="160" y1="40" x2="260" y2="70"/>
-        <line x1="160" y1="40" x2="260" y2="130"/>
-        <line x1="160" y1="80" x2="260" y2="70"/>
-        <line x1="160" y1="80" x2="260" y2="130"/>
-        <line x1="160" y1="120" x2="260" y2="70"/>
-        <line x1="160" y1="120" x2="260" y2="130"/>
-        <line x1="160" y1="160" x2="260" y2="70"/>
-        <line x1="160" y1="160" x2="260" y2="130"/>
+        <line x1="60" y1="50" x2="160" y2="40"/><line x1="60" y1="50" x2="160" y2="80"/>
+        <line x1="60" y1="50" x2="160" y2="120"/><line x1="60" y1="50" x2="160" y2="160"/>
+        <line x1="60" y1="100" x2="160" y2="40"/><line x1="60" y1="100" x2="160" y2="80"/>
+        <line x1="60" y1="100" x2="160" y2="120"/><line x1="60" y1="100" x2="160" y2="160"/>
+        <line x1="60" y1="150" x2="160" y2="40"/><line x1="60" y1="150" x2="160" y2="80"/>
+        <line x1="60" y1="150" x2="160" y2="120"/><line x1="60" y1="150" x2="160" y2="160"/>
+        <line x1="160" y1="40" x2="260" y2="70"/><line x1="160" y1="40" x2="260" y2="130"/>
+        <line x1="160" y1="80" x2="260" y2="70"/><line x1="160" y1="80" x2="260" y2="130"/>
+        <line x1="160" y1="120" x2="260" y2="70"/><line x1="160" y1="120" x2="260" y2="130"/>
+        <line x1="160" y1="160" x2="260" y2="70"/><line x1="160" y1="160" x2="260" y2="130"/>
       </g>
-      <!-- highlight edges -->
       <g stroke="rgba(160,130,255,.55)" stroke-width="1.2">
-        <line x1="60" y1="100" x2="160" y2="80"/>
-        <line x1="160" y1="80" x2="260" y2="70"/>
-        <line x1="60" y1="50" x2="160" y2="120"/>
-        <line x1="160" y1="120" x2="260" y2="130"/>
+        <line x1="60" y1="100" x2="160" y2="80"/><line x1="160" y1="80" x2="260" y2="70"/>
+        <line x1="60" y1="50" x2="160" y2="120"/><line x1="160" y1="120" x2="260" y2="130"/>
       </g>
-      <!-- input nodes -->
       <g fill="#a082ff" stroke="#c8b4ff" stroke-width="1.2">
-        <circle cx="60" cy="50" r="10"/>
-        <circle cx="60" cy="100" r="10"/>
-        <circle cx="60" cy="150" r="10"/>
+        <circle cx="60" cy="50" r="10"/><circle cx="60" cy="100" r="10"/><circle cx="60" cy="150" r="10"/>
       </g>
-      <!-- hidden nodes -->
       <g fill="#7b5ea7" stroke="#a082ff" stroke-width="1.2">
-        <circle cx="160" cy="40" r="10"/>
-        <circle cx="160" cy="80" r="10"/>
-        <circle cx="160" cy="120" r="10"/>
-        <circle cx="160" cy="160" r="10"/>
+        <circle cx="160" cy="40" r="10"/><circle cx="160" cy="80" r="10"/>
+        <circle cx="160" cy="120" r="10"/><circle cx="160" cy="160" r="10"/>
       </g>
-      <!-- output nodes -->
       <g fill="#1a9e85" stroke="#2dd4b8" stroke-width="1.2">
-        <circle cx="260" cy="70" r="12"/>
-        <circle cx="260" cy="130" r="12"/>
+        <circle cx="260" cy="70" r="12"/><circle cx="260" cy="130" r="12"/>
       </g>
-      <!-- labels -->
       <text x="36" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">input</text>
       <text x="148" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">hidden</text>
       <text x="244" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">output</text>
@@ -221,19 +200,14 @@
         </linearGradient>
       </defs>
       <rect width="320" height="200" fill="url(#g3a)"/>
-      <!-- envelope body -->
       <rect x="70" y="62" width="180" height="110" rx="8" fill="none" stroke="#1a9e85" stroke-width="1.8"/>
       <rect x="70" y="62" width="180" height="110" rx="8" fill="rgba(26,158,133,.07)"/>
-      <!-- envelope flap -->
       <polyline points="70,62 160,118 250,62" fill="none" stroke="#1a9e85" stroke-width="1.8"/>
-      <!-- envelope bottom lines -->
       <line x1="70" y1="172" x2="130" y2="125" stroke="rgba(26,158,133,.35)" stroke-width="1.2"/>
       <line x1="250" y1="172" x2="190" y2="125" stroke="rgba(26,158,133,.35)" stroke-width="1.2"/>
-      <!-- dot indicators -->
       <circle cx="160" cy="38" r="4" fill="#1a9e85" opacity=".7"/>
       <circle cx="144" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
       <circle cx="176" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
-      <!-- sparkle dots -->
       <circle cx="90" cy="40" r="2" fill="rgba(255,255,255,.3)"/>
       <circle cx="240" cy="45" r="2" fill="rgba(255,255,255,.2)"/>
       <circle cx="280" cy="80" r="1.5" fill="rgba(255,255,255,.2)"/>
@@ -248,19 +222,13 @@
 
   <!-- ④ My GitHub Project -->
   <a class="scard" href="https://github.com/DerWindntm" target="_blank" rel="noopener">
-    <img class="scard-img" src="github-preview.jpg"
-         alt="GitHub Project"
+    <img class="scard-img" src="github-preview.jpg" alt="GitHub Project"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-    <!-- fallback SVG shown when image is missing -->
-    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"
-         style="display:none;">
+    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="display:none;">
       <rect width="320" height="200" fill="#161b22"/>
-      <text x="160" y="90" text-anchor="middle" fill="rgba(255,255,255,.25)"
-            font-size="13" font-family="monospace">Add github-preview.jpg</text>
-      <text x="160" y="112" text-anchor="middle" fill="rgba(255,255,255,.15)"
-            font-size="11" font-family="monospace">to your repository folder</text>
-      <!-- github octocat outline simplified -->
-      <circle cx="160" cy="145" r="16" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+      <text x="160" y="90" text-anchor="middle" fill="rgba(255,255,255,.25)" font-size="13" font-family="monospace">Add github-preview.jpg</text>
+      <text x="160" y="112" text-anchor="middle" fill="rgba(255,255,255,.15)" font-size="11" font-family="monospace">to your repository folder</text>
+      <circle cx="160" cy="148" r="18" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
     </svg>
     <div class="scard-body">
       <div class="scard-tag">GitHub</div>
@@ -273,23 +241,243 @@
 </div>
 
 <script>
-/* mouse-drag to scroll */
+/* ══════════════════════════════════════════
+   FIREWORKS ENGINE
+   ══════════════════════════════════════════ */
+const canvas = document.getElementById('fw-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resize(){
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* colour palettes */
+const PALETTES = [
+  ['#ff6b6b','#ff8e53','#ffd93d','#fff'],
+  ['#6bcbff','#a78bfa','#f472b6','#fff'],
+  ['#34d399','#60a5fa','#f59e0b','#fff'],
+  ['#ff6eb4','#ff9de2','#ffd6f0','#fff'],
+  ['#ffd700','#ff8c00','#ff4500','#fff'],
+];
+
+/* ── Particle ── */
+class Particle {
+  constructor(x, y, color, vx, vy, size, life, gravity=0.06){
+    this.x=x; this.y=y; this.color=color;
+    this.vx=vx; this.vy=vy; this.size=size;
+    this.life=life; this.maxLife=life;
+    this.gravity=gravity;
+  }
+  update(){
+    this.x  += this.vx;
+    this.y  += this.vy;
+    this.vy += this.gravity;
+    this.vx *= 0.97;
+    this.vy *= 0.97;
+    this.life--;
+  }
+  draw(){
+    const alpha = Math.max(0, this.life / this.maxLife);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle   = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur  = 6;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+/* ── Trail particle (mouse tail) ── */
+class TrailParticle {
+  constructor(x, y){
+    const palette = PALETTES[Math.floor(Math.random()*PALETTES.length)];
+    this.color = palette[Math.floor(Math.random()*palette.length)];
+    this.x=x; this.y=y;
+    this.vx=(Math.random()-.5)*1.2;
+    this.vy=(Math.random()-.5)*1.2 - 0.5;
+    this.size=Math.random()*2.5+1;
+    this.life=Math.floor(Math.random()*25+15);
+    this.maxLife=this.life;
+  }
+  update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=0.04; this.vx*=0.96; this.life--; }
+  draw(){
+    const a = (this.life/this.maxLife)*0.55;
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.fillStyle=this.color;
+    ctx.shadowColor=this.color;
+    ctx.shadowBlur=4;
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size*(this.life/this.maxLife),0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+/* ── Burst firework ── */
+function burst(x, y, count=80, palette=null){
+  const pal = palette || PALETTES[Math.floor(Math.random()*PALETTES.length)];
+  for(let i=0;i<count;i++){
+    const angle  = (Math.PI*2/count)*i + Math.random()*.3;
+    const speed  = Math.random()*5+2;
+    const color  = pal[Math.floor(Math.random()*pal.length)];
+    const size   = Math.random()*2.5+1;
+    const life   = Math.floor(Math.random()*40+50);
+    particles.push(new Particle(
+      x, y, color,
+      Math.cos(angle)*speed,
+      Math.sin(angle)*speed,
+      size, life
+    ));
+  }
+  /* sparkle ring */
+  for(let i=0;i<20;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = Math.random()*2+0.5;
+    particles.push(new Particle(
+      x, y, '#fff',
+      Math.cos(angle)*speed, Math.sin(angle)*speed,
+      1, Math.floor(Math.random()*30+20), 0.02
+    ));
+  }
+}
+
+/* ── Rocket (opening show) ── */
+class Rocket {
+  constructor(){
+    this.x   = Math.random()*canvas.width*.8 + canvas.width*.1;
+    this.y   = canvas.height + 10;
+    this.tx  = this.x + (Math.random()-.5)*200;
+    this.ty  = Math.random()*canvas.height*.45 + canvas.height*.05;
+    const dx = this.tx - this.x;
+    const dy = this.ty - this.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    const speed = Math.random()*4+8;
+    this.vx  = (dx/dist)*speed;
+    this.vy  = (dy/dist)*speed;
+    this.trail=[];
+    this.done=false;
+    const pal = PALETTES[Math.floor(Math.random()*PALETTES.length)];
+    this.color = pal[0];
+    this.palette = pal;
+  }
+  update(){
+    this.trail.push({x:this.x, y:this.y});
+    if(this.trail.length>12) this.trail.shift();
+    this.x+=this.vx; this.y+=this.vy;
+    if(this.vy>0 || Math.abs(this.y-this.ty)<10){
+      burst(this.x, this.y, 100, this.palette);
+      this.done=true;
+    }
+  }
+  draw(){
+    for(let i=0;i<this.trail.length;i++){
+      const a=(i/this.trail.length)*0.7;
+      ctx.save();
+      ctx.globalAlpha=a;
+      ctx.fillStyle=this.color;
+      ctx.shadowColor=this.color;
+      ctx.shadowBlur=8;
+      ctx.beginPath();
+      ctx.arc(this.trail[i].x, this.trail[i].y, 2.5*(i/this.trail.length), 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.save();
+    ctx.globalAlpha=0.95;
+    ctx.fillStyle='#fff';
+    ctx.shadowColor=this.color;
+    ctx.shadowBlur=14;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+let particles = [];
+let rockets   = [];
+let trails    = [];
+let mouse     = {x:-999, y:-999, moving:false};
+let trailTimer = 0;
+
+/* ── mouse spray ── */
+document.addEventListener('mousemove', e=>{
+  mouse.x=e.clientX; mouse.y=e.clientY; mouse.moving=true;
+  trailTimer++;
+  if(trailTimer%2===0){
+    for(let i=0;i<3;i++) trails.push(new TrailParticle(mouse.x, mouse.y));
+  }
+});
+document.addEventListener('mouseleave', ()=>{ mouse.moving=false; });
+
+/* mouse idle spray */
+let idleTimer=0;
+setInterval(()=>{
+  if(!mouse.moving) return;
+  idleTimer++;
+  if(idleTimer%4===0){
+    for(let i=0;i<5;i++) trails.push(new TrailParticle(mouse.x, mouse.y));
+  }
+},16);
+
+/* ── opening show: launch rockets over 4 seconds ── */
+let openingDone = false;
+let launchCount = 0;
+const TOTAL_ROCKETS = 14;
+const launchInterval = setInterval(()=>{
+  rockets.push(new Rocket());
+  launchCount++;
+  if(launchCount>=TOTAL_ROCKETS){
+    clearInterval(launchInterval);
+    setTimeout(()=>{ openingDone=true; }, 3000);
+  }
+}, 280);
+
+/* ── ambient auto-fireworks after opening ── */
+setInterval(()=>{
+  if(!openingDone) return;
+  if(Math.random()<0.35){
+    const x = Math.random()*canvas.width*.8 + canvas.width*.1;
+    const y = Math.random()*canvas.height*.5 + canvas.height*.05;
+    burst(x, y, 60);
+  }
+}, 2200);
+
+/* ── main loop ── */
+function loop(){
+  /* clear with slight fade for trail glow */
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  /* rockets */
+  rockets = rockets.filter(r=>!r.done);
+  rockets.forEach(r=>{ r.update(); r.draw(); });
+
+  /* burst particles */
+  particles = particles.filter(p=>p.life>0);
+  particles.forEach(p=>{ p.update(); p.draw(); });
+
+  /* trail particles */
+  trails = trails.filter(t=>t.life>0);
+  trails.forEach(t=>{ t.update(); t.draw(); });
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ── drag to scroll ── */
 const strip = document.getElementById('strip');
-let isDown = false, startX, scrollLeft;
-strip.addEventListener('mousedown', e => {
-  isDown = true;
-  strip.style.cursor = 'grabbing';
-  startX = e.pageX - strip.offsetLeft;
-  scrollLeft = strip.scrollLeft;
-});
-strip.addEventListener('mouseleave', () => { isDown = false; strip.style.cursor = 'grab'; });
-strip.addEventListener('mouseup',    () => { isDown = false; strip.style.cursor = 'grab'; });
-strip.addEventListener('mousemove',  e => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - strip.offsetLeft;
-  strip.scrollLeft = scrollLeft - (x - startX) * 1.2;
-});
+let isDown=false, startX, scrollLeft;
+strip.addEventListener('mousedown', e=>{ isDown=true; strip.style.cursor='grabbing'; startX=e.pageX-strip.offsetLeft; scrollLeft=strip.scrollLeft; });
+strip.addEventListener('mouseleave', ()=>{ isDown=false; strip.style.cursor='grab'; });
+strip.addEventListener('mouseup',    ()=>{ isDown=false; strip.style.cursor='grab'; });
+strip.addEventListener('mousemove',  e=>{ if(!isDown)return; e.preventDefault(); const x=e.pageX-strip.offsetLeft; strip.scrollLeft=scrollLeft-(x-startX)*1.2; });
 </script>
 
 </body>
