@@ -6,60 +6,291 @@
 <title>DerWindntm — Personal Notes</title>
 <link rel="stylesheet" href="nav.css">
 <style>
-.hero{padding:5rem 3rem 3rem;max-width:860px;margin:0 auto;}
+.hero{padding:5rem 3rem 2.5rem;max-width:960px;margin:0 auto;}
 .hero h1{font-size:36px;font-weight:500;margin-bottom:.8rem;}
-.hero p{font-size:16px;color:#5c5852;max-width:540px;line-height:1.8;margin-bottom:2rem;}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:860px;margin:0 auto;padding:0 3rem 5rem;}
-.card{border:0.5px solid #e0ddd8;border-radius:8px;padding:1.25rem 1.5rem;text-decoration:none;color:#1a1814;transition:border-color .15s,background .15s;display:block;}
-.card:hover{border-color:#1a9e85;background:#f4fdf9;}
-.card-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#1a9e85;margin-bottom:.4rem;}
-.card-title{font-size:14px;font-weight:500;line-height:1.5;}
-.card-sub{font-size:12px;color:#9a9690;margin-top:.3rem;}
+.hero p{font-size:16px;color:#5c5852;max-width:540px;line-height:1.8;}
+
+/* ── Scroll strip ── */
+.strip-wrap{padding:0 3rem 5rem;overflow:hidden;}
+.strip{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:12px;
+  cursor:grab;
+}
+.strip:active{cursor:grabbing;}
+.strip::-webkit-scrollbar{height:4px;}
+.strip::-webkit-scrollbar-track{background:#f0ede6;border-radius:2px;}
+.strip::-webkit-scrollbar-thumb{background:#c8c4bc;border-radius:2px;}
+
+/* ── Card ── */
+.scard{
+  flex:0 0 320px;
+  scroll-snap-align:start;
+  border-radius:16px;
+  overflow:hidden;
+  text-decoration:none;
+  color:#1a1814;
+  background:#fff;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
+  display:block;
+  border:0.5px solid #e8e4de;
+}
+.scard:hover{
+  transform:scale(1.03);
+  box-shadow:0 8px 32px rgba(0,0,0,.13);
+}
+.scard-img{
+  width:100%;
+  height:200px;
+  display:block;
+  object-fit:cover;
+}
+.scard-img-svg{
+  width:100%;
+  height:200px;
+  display:block;
+}
+.scard-body{
+  padding:1.1rem 1.3rem 1.3rem;
+}
+.scard-tag{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.09em;color:#1a9e85;margin-bottom:.35rem;
+}
+.scard-title{
+  font-size:17px;font-weight:500;line-height:1.4;margin-bottom:.3rem;
+}
+.scard-sub{
+  font-size:13px;color:#9a9690;line-height:1.6;
+}
 </style>
 </head>
 <body>
 <nav>
   <a class="nav-brand" href="index.html">DerWindntm</a>
   <ul class="nav-items">
-    <li class="nav-item">
-      <a class="nav-link" href="contents.html">Contents</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="notes-info.html">Notes Info</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="programming.html">Programming Skills</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="contact.html">Contact with Me</a>
-    </li>
+    <li class="nav-item"><a class="nav-link" href="contents.html">Contents</a></li>
+    <li class="nav-item"><a class="nav-link" href="notes-info.html">Notes Info</a></li>
+    <li class="nav-item"><a class="nav-link" href="programming.html">Programming Skills</a></li>
+    <li class="nav-item"><a class="nav-link" href="contact.html">Contact with Me</a></li>
   </ul>
 </nav>
+
 <div class="hero">
   <h1>Welcome やっほ！</h1>
   <p>A personal site collecting notes on plasma physics, AI, and programming. Browse the notes or leave a message on the contact page.</p>
 </div>
-<div class="cards">
-  <a class="card" href="contents.html">
-    <div class="card-label">All Notes</div>
-    <div class="card-title">Browse Contents</div>
-    <div class="card-sub">Plasma physics, AI, and more</div>
+
+<div class="strip-wrap">
+<div class="strip" id="strip">
+
+  <!-- ① Plasma Physics Notes -->
+  <a class="scard" href="contents.html">
+    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0a1628"/>
+          <stop offset="100%" stop-color="#0d2a40"/>
+        </linearGradient>
+      </defs>
+      <rect width="320" height="200" fill="url(#g1a)"/>
+      <!-- grid lines -->
+      <g stroke="rgba(255,255,255,.06)" stroke-width="0.5">
+        <line x1="0" y1="50" x2="320" y2="50"/>
+        <line x1="0" y1="100" x2="320" y2="100"/>
+        <line x1="0" y1="150" x2="320" y2="150"/>
+        <line x1="80" y1="0" x2="80" y2="200"/>
+        <line x1="160" y1="0" x2="160" y2="200"/>
+        <line x1="240" y1="0" x2="240" y2="200"/>
+      </g>
+      <!-- dispersion curve glow -->
+      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
+            fill="none" stroke="rgba(26,158,133,.35)" stroke-width="8"/>
+      <path d="M20,160 Q80,140 120,100 Q160,60 200,55 Q240,52 300,50"
+            fill="none" stroke="#1a9e85" stroke-width="2"/>
+      <!-- second mode -->
+      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
+            fill="none" stroke="rgba(100,180,255,.3)" stroke-width="5"/>
+      <path d="M20,180 Q60,170 100,155 Q140,138 180,120 Q220,100 300,90"
+            fill="none" stroke="#64b4ff" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- omega axis label -->
+      <text x="14" y="18" fill="rgba(255,255,255,.5)" font-size="11" font-family="monospace">ω</text>
+      <line x1="20" y1="22" x2="20" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <polygon points="20,20 17,28 23,28" fill="rgba(255,255,255,.3)"/>
+      <!-- k axis -->
+      <text x="298" y="195" fill="rgba(255,255,255,.5)" font-size="11" font-family="monospace">k</text>
+      <line x1="18" y1="175" x2="302" y2="175" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      <polygon points="304,175 296,172 296,178" fill="rgba(255,255,255,.3)"/>
+      <!-- D(ω,k)=0 label -->
+      <text x="210" y="45" fill="#1a9e85" font-size="11" font-family="monospace">D(ω,k)=0</text>
+      <!-- dots on curve -->
+      <circle cx="120" cy="100" r="3" fill="#1a9e85"/>
+      <circle cx="200" cy="55" r="3" fill="#1a9e85"/>
+    </svg>
+    <div class="scard-body">
+      <div class="scard-tag">Plasma Physics</div>
+      <div class="scard-title">Plasma Physics Notes</div>
+      <div class="scard-sub">Dispersion relations, Vlasov equation, Z-function and more.</div>
+    </div>
   </a>
-  <a class="card" href="hoshino1985.html">
-    <div class="card-label">Plasma Physics</div>
-    <div class="card-title">Dispersion Relation D(&omega;, k)</div>
-    <div class="card-sub">Hoshino &amp; Terasawa 1985</div>
+
+  <!-- ② ML Notes -->
+  <a class="scard" href="contents.html">
+    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g2a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#12102a"/>
+          <stop offset="100%" stop-color="#1a1040"/>
+        </linearGradient>
+      </defs>
+      <rect width="320" height="200" fill="url(#g2a)"/>
+      <!-- edges -->
+      <g stroke="rgba(160,130,255,.18)" stroke-width="1">
+        <!-- input to hidden -->
+        <line x1="60" y1="50" x2="160" y2="40"/>
+        <line x1="60" y1="50" x2="160" y2="80"/>
+        <line x1="60" y1="50" x2="160" y2="120"/>
+        <line x1="60" y1="50" x2="160" y2="160"/>
+        <line x1="60" y1="100" x2="160" y2="40"/>
+        <line x1="60" y1="100" x2="160" y2="80"/>
+        <line x1="60" y1="100" x2="160" y2="120"/>
+        <line x1="60" y1="100" x2="160" y2="160"/>
+        <line x1="60" y1="150" x2="160" y2="40"/>
+        <line x1="60" y1="150" x2="160" y2="80"/>
+        <line x1="60" y1="150" x2="160" y2="120"/>
+        <line x1="60" y1="150" x2="160" y2="160"/>
+        <!-- hidden to output -->
+        <line x1="160" y1="40" x2="260" y2="70"/>
+        <line x1="160" y1="40" x2="260" y2="130"/>
+        <line x1="160" y1="80" x2="260" y2="70"/>
+        <line x1="160" y1="80" x2="260" y2="130"/>
+        <line x1="160" y1="120" x2="260" y2="70"/>
+        <line x1="160" y1="120" x2="260" y2="130"/>
+        <line x1="160" y1="160" x2="260" y2="70"/>
+        <line x1="160" y1="160" x2="260" y2="130"/>
+      </g>
+      <!-- highlight edges -->
+      <g stroke="rgba(160,130,255,.55)" stroke-width="1.2">
+        <line x1="60" y1="100" x2="160" y2="80"/>
+        <line x1="160" y1="80" x2="260" y2="70"/>
+        <line x1="60" y1="50" x2="160" y2="120"/>
+        <line x1="160" y1="120" x2="260" y2="130"/>
+      </g>
+      <!-- input nodes -->
+      <g fill="#a082ff" stroke="#c8b4ff" stroke-width="1.2">
+        <circle cx="60" cy="50" r="10"/>
+        <circle cx="60" cy="100" r="10"/>
+        <circle cx="60" cy="150" r="10"/>
+      </g>
+      <!-- hidden nodes -->
+      <g fill="#7b5ea7" stroke="#a082ff" stroke-width="1.2">
+        <circle cx="160" cy="40" r="10"/>
+        <circle cx="160" cy="80" r="10"/>
+        <circle cx="160" cy="120" r="10"/>
+        <circle cx="160" cy="160" r="10"/>
+      </g>
+      <!-- output nodes -->
+      <g fill="#1a9e85" stroke="#2dd4b8" stroke-width="1.2">
+        <circle cx="260" cy="70" r="12"/>
+        <circle cx="260" cy="130" r="12"/>
+      </g>
+      <!-- labels -->
+      <text x="36" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">input</text>
+      <text x="148" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">hidden</text>
+      <text x="244" y="18" fill="rgba(255,255,255,.35)" font-size="10" font-family="monospace">output</text>
+    </svg>
+    <div class="scard-body">
+      <div class="scard-tag">Machine Learning</div>
+      <div class="scard-title">ML Notes</div>
+      <div class="scard-sub">Graph neural networks, node embeddings, and learning theory.</div>
+    </div>
   </a>
-  <a class="card" href="marin2025.html">
-    <div class="card-label">Plasma Physics</div>
-    <div class="card-title">Marin 2025 Notes</div>
-    <div class="card-sub">Personal lecture notes</div>
+
+  <!-- ③ Contact -->
+  <a class="scard" href="contact.html">
+    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g3a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0f1f1a"/>
+          <stop offset="100%" stop-color="#0a2820"/>
+        </linearGradient>
+      </defs>
+      <rect width="320" height="200" fill="url(#g3a)"/>
+      <!-- envelope body -->
+      <rect x="70" y="62" width="180" height="110" rx="8" fill="none" stroke="#1a9e85" stroke-width="1.8"/>
+      <rect x="70" y="62" width="180" height="110" rx="8" fill="rgba(26,158,133,.07)"/>
+      <!-- envelope flap -->
+      <polyline points="70,62 160,118 250,62" fill="none" stroke="#1a9e85" stroke-width="1.8"/>
+      <!-- envelope bottom lines -->
+      <line x1="70" y1="172" x2="130" y2="125" stroke="rgba(26,158,133,.35)" stroke-width="1.2"/>
+      <line x1="250" y1="172" x2="190" y2="125" stroke="rgba(26,158,133,.35)" stroke-width="1.2"/>
+      <!-- dot indicators -->
+      <circle cx="160" cy="38" r="4" fill="#1a9e85" opacity=".7"/>
+      <circle cx="144" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
+      <circle cx="176" cy="34" r="3" fill="#1a9e85" opacity=".4"/>
+      <!-- sparkle dots -->
+      <circle cx="90" cy="40" r="2" fill="rgba(255,255,255,.3)"/>
+      <circle cx="240" cy="45" r="2" fill="rgba(255,255,255,.2)"/>
+      <circle cx="280" cy="80" r="1.5" fill="rgba(255,255,255,.2)"/>
+      <circle cx="40" cy="120" r="1.5" fill="rgba(255,255,255,.15)"/>
+    </svg>
+    <div class="scard-body">
+      <div class="scard-tag">Contact</div>
+      <div class="scard-title">Leave a Message</div>
+      <div class="scard-sub">Comments, replies and likes — all welcome.</div>
+    </div>
   </a>
-  <a class="card" href="contact.html">
-    <div class="card-label">Contact</div>
-    <div class="card-title">Leave a Message</div>
-    <div class="card-sub">Comments &amp; replies welcome</div>
+
+  <!-- ④ My GitHub Project -->
+  <a class="scard" href="https://github.com/DerWindntm" target="_blank" rel="noopener">
+    <img class="scard-img" src="github-preview.jpg"
+         alt="GitHub Project"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <!-- fallback SVG shown when image is missing -->
+    <svg class="scard-img-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"
+         style="display:none;">
+      <rect width="320" height="200" fill="#161b22"/>
+      <text x="160" y="90" text-anchor="middle" fill="rgba(255,255,255,.25)"
+            font-size="13" font-family="monospace">Add github-preview.jpg</text>
+      <text x="160" y="112" text-anchor="middle" fill="rgba(255,255,255,.15)"
+            font-size="11" font-family="monospace">to your repository folder</text>
+      <!-- github octocat outline simplified -->
+      <circle cx="160" cy="145" r="16" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+    </svg>
+    <div class="scard-body">
+      <div class="scard-tag">GitHub</div>
+      <div class="scard-title">My GitHub Projects</div>
+      <div class="scard-sub">Source code, repositories and open-source work.</div>
+    </div>
   </a>
+
 </div>
+</div>
+
+<script>
+/* mouse-drag to scroll */
+const strip = document.getElementById('strip');
+let isDown = false, startX, scrollLeft;
+strip.addEventListener('mousedown', e => {
+  isDown = true;
+  strip.style.cursor = 'grabbing';
+  startX = e.pageX - strip.offsetLeft;
+  scrollLeft = strip.scrollLeft;
+});
+strip.addEventListener('mouseleave', () => { isDown = false; strip.style.cursor = 'grab'; });
+strip.addEventListener('mouseup',    () => { isDown = false; strip.style.cursor = 'grab'; });
+strip.addEventListener('mousemove',  e => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - strip.offsetLeft;
+  strip.scrollLeft = scrollLeft - (x - startX) * 1.2;
+});
+</script>
+
 </body>
 </html>
